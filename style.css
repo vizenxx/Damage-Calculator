@@ -89,16 +89,20 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 }
 
 .overview-simplified-display {
-    display: none; 
-    flex-grow: 1; 
+    flex-grow: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-start; 
-    gap: 10px; 
-    font-size: 1em; 
+    gap: 10px;
+    font-size: 1em;
+    width: 100%; 
+    overflow-x: auto; 
+    overflow-y: hidden; 
+    -webkit-overflow-scrolling: touch; 
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-color) var(--card-bg-color); 
+    padding-bottom: 5px; 
 }
 .overview-panel.simplified .overview-simplified-display { display: flex; }
-.overview-panel.simplified .overview-full-content-placeholder { display: none; }
 .overview-panel:not(.simplified) .overview-simplified-display { display: none; }
 
 
@@ -107,6 +111,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     align-items: center;
     gap: 8px;
     flex-shrink: 0; 
+    white-space: nowrap; 
 }
 .simplified-char-name {
     color: var(--primary-color);
@@ -120,12 +125,11 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 
 .simplified-triggers-group {
     display: flex;
-    gap: 5px; 
+    gap: 5px;
     align-items: center;
-    flex-shrink: 1; 
-    min-width: 0; 
-    overflow-x: auto;
-    margin: 0 10px; 
+    flex-shrink: 0; 
+    margin: 0 5px; 
+    white-space: nowrap; 
 }
 .simplified-triggers-group .checkbox-label,
 .simplified-triggers-group .select-label {
@@ -136,6 +140,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     border-radius: 3px;
     display: flex;
     align-items: center;
+    flex-shrink: 0; 
 }
 .simplified-triggers-group .checkbox-label input[type="checkbox"] {
     margin-right: 2px;
@@ -155,7 +160,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 .simplified-final-damage {
     color: var(--danger-color);
     font-weight: 600;
-    white-space: nowrap;
+    white-space: nowrap; 
     font-size: 1.05em;
     margin-left: auto; 
     flex-shrink: 0; 
@@ -189,6 +194,19 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 .overview-panel.simplified .global-trace {
     display: none !important;
 }
+
+.overview-simplified-display::-webkit-scrollbar {
+    height: 6px;
+}
+.overview-simplified-display::-webkit-scrollbar-track {
+    background: var(--card-bg-color); 
+    border-radius: 3px;
+}
+.overview-simplified-display::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-color); 
+    border-radius: 3px;
+}
+
 
 .overview-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -238,17 +256,16 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 .skill-display-value-wrapper {
     display: flex; align-items: center; gap: 8px;
     padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 4px; background-color: #e9ecef;
-    position: relative; /* For suffix positioning */
+    position: relative; 
 }
 #quickViewSkillMultiplier_value_display {
     font-weight: bold;
-    flex-grow: 1; /* Allow text to take space */
+    flex-grow: 1; 
 }
-/* Suffix for skill display, distinct from input-suffix-internal for inputs */
 .skill-display-value-wrapper .skill-display-suffix {
     color: var(--medium-text-color);
     font-size: 0.9em;
-    margin-left: 4px; /* Space from value */
+    margin-left: 4px; 
 }
 .skill-display-group-overview .checkbox-label {
     margin-left: auto; 
@@ -297,25 +314,54 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 .trace-comment { color: var(--secondary-color); font-style: italic; font-size: 0.9em; }
 
 .character-tabs {
-    display: flex; border-bottom: 2px solid var(--primary-color);
-    margin-bottom: -1px; position: sticky;
-    top: var(--overview-simplified-height);
-    background-color: #eef2f5; z-index: 1000; padding: 0; width: 100%;
+    display: flex;
+    border-bottom: 2px solid var(--primary-color);
+    margin-bottom: -1px;
+    position: sticky;
+    top: var(--overview-simplified-height); 
+    background-color: #eef2f5;
+    z-index: 1000;
+    padding: 0;
+    width: 100%;
     transition: top 0.3s ease-out;
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch; 
+    scrollbar-width: thin; 
+    scrollbar-color: var(--primary-color) var(--light-bg-color); 
 }
+
+.character-tabs::-webkit-scrollbar {
+    height: 6px; 
+}
+.character-tabs::-webkit-scrollbar-track {
+    background: var(--light-bg-color);
+    border-radius: 3px;
+}
+.character-tabs::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+
 .tab-button {
-    flex-grow: 1; flex-basis: 0;
-    border: 1px solid transparent; border-bottom: none;
+    /* flex-grow: 1; /* Allow tabs to grow if few, but rely on min-width if many */
+    flex-shrink: 0; 
+    flex-basis: auto; 
+    min-width: 90px; 
+    border: 1px solid transparent;
+    border-bottom: none;
     border-left-color: var(--border-color);
-    cursor: pointer; background-color: var(--light-bg-color);
-    text-align: center; font-weight: 500; color: var(--medium-text-color);
-    min-width: 100px;
+    cursor: pointer;
+    background-color: var(--light-bg-color);
+    text-align: center;
+    font-weight: 500;
+    color: var(--medium-text-color);
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-    display: flex; 
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 10px 5px;
     position: relative;
+    white-space: nowrap; 
 }
 .tab-char-name-display {
     display: inline-block;
@@ -401,7 +447,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     display: flex; 
     flex-direction: column; 
     align-items: flex-end; 
-    gap: 10px; /* Increased gap */
+    gap: 10px; 
     justify-self: end;
 }
 
@@ -445,39 +491,39 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 .skill-multiplier-item .selected-skill-label {
     font-weight: bold;
     color: var(--primary-color);
-    font-size: 1.1em; /* Further increased font size */
-    text-shadow: 0 0 3px rgba(0,123,255,0.3); /* Added subtle glow */
+    font-size: 1.1em; 
+    text-shadow: 0 0 3px rgba(0,123,255,0.3); 
 }
 .skill-multiplier-item .alternate-skill-label {
     color: var(--light-text-color);
     font-style: italic;
-    font-size: 0.9em; /* Slightly smaller */
+    font-size: 0.9em; 
 }
 .skill-multiplier-item input[type="radio"] {
     margin-right: 5px;
 }
 
 .bonus-item .remove-bonus {
-    padding: 5px 8px; /* Slightly smaller padding */
-    font-size: 0.85em; /* Slightly smaller font */
+    padding: 5px 8px; 
+    font-size: 0.85em; 
     background-color: var(--danger-color);
     color: white; border: none; border-radius: var(--border-radius); cursor: pointer;
     align-self: flex-end; 
 }
 .bonus-item .trigger-label {
-    font-size: 1em; /* Larger font size for trigger */
-    color: var(--dark-text-color); /* Darker color for more prominence */
+    font-size: 1em; 
+    color: var(--dark-text-color); 
     font-weight: 500;
-    padding: 4px 6px; /* Add some padding */
-    border: 1px solid var(--border-color); /* Optional: add border */
+    padding: 4px 6px; 
+    border: 1px solid var(--border-color); 
     border-radius: 4px;
-    background-color: #f0f0f0; /* Optional: slight background */
+    background-color: #f0f0f0; 
     display: flex; align-items: center; white-space: nowrap;
     cursor: pointer;
-    order: -1; /* Ensure trigger appears above remove button if actions are column */
+    order: -1; 
 }
 .bonus-item .trigger-label input[type="checkbox"] {
-    transform: scale(1.1); /* Make checkbox slightly larger */
+    transform: scale(1.1); 
     margin-right: 8px;
 }
 
@@ -486,12 +532,12 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     gap: 6px;
     flex-wrap: wrap;
     justify-content: flex-start; 
-    font-size: 0.85em; /* Slightly smaller appliesTo */
-    margin-bottom: 5px; /* Add some space below appliesTo if trigger is next */
+    font-size: 0.85em; 
+    margin-bottom: 5px; 
 }
 .bonus-item .item-actions .applies-to-group {
-    width: 100%; /* Make applies to group take full width in actions column */
-    justify-content: flex-end; /* Align radio buttons to the right */
+    width: 100%; 
+    justify-content: flex-end; 
 }
 
 
@@ -556,13 +602,13 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
      .bonus-item .item-main-content .applies-to-group {
         margin-top: 8px;
     }
-    .bonus-item .item-actions .trigger-label { order: 0;} /* Reset order for row layout */
+    .bonus-item .item-actions .trigger-label { order: 0;} 
     .bonus-item .item-actions .applies-to-group { width: auto; justify-content: center; }
 
 
     .io-section-content { flex-direction: column; }
     .overview-simplified-display { 
-        flex-wrap: wrap;
+        /* flex-wrap: wrap; /* Removed to prioritize horizontal scroll */
     }
     .simplified-char-info { flex-basis: auto; margin-right: 10px; }
     .simplified-triggers-group { flex-grow: 1; min-width: 150px; margin:0; justify-content: flex-start;}
@@ -572,17 +618,19 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 @media (max-width: 768px) {
     :root { --overview-simplified-height: auto; } 
     .overview-header { min-height: 45px; }
-    .overview-simplified-display {
-        font-size: 0.9em; flex-direction: column; align-items: flex-start; gap: 5px;
-    }
-    .simplified-char-info { flex-direction: row; gap: 10px; align-items: center; width: 100%; justify-content: flex-start; }
+    /* .overview-simplified-display {
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 5px; 
+    } */ /* Reverted to allow horizontal scroll even on smaller screens */
+    .simplified-char-info { flex-direction: row; gap: 10px; align-items: center; /* width: 100%; */ justify-content: flex-start; }
     .simplified-final-damage { margin-left: auto; margin-top: 0; }
-    .simplified-triggers-group { width:100%; margin-top: 5px; gap: 3px 8px; justify-content: flex-start; flex-wrap:wrap; }
+    .simplified-triggers-group { /* width:100%; */ margin-top: 0; gap: 3px 8px; justify-content: flex-start; /* flex-wrap:wrap; */ }
 
     .main-container { padding: 10px; }
     .card, .character-panel { padding: 15px; }
-    .character-tabs { top: 60px;  } 
-    .tab-button { min-width: 90px; }
+    .character-tabs { top: 60px;  } /* Adjust if simplified header height varies significantly */
+    .tab-button { min-width: 80px; } /* Further reduce for very small screens */
     .tab-char-name-display, .tab-button input.tab-char-name-input-edit { font-size: 0.85em; padding: 8px 3px;}
 
     .base-stats-grid { grid-template-columns: 1fr; }
@@ -617,7 +665,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     h4 { font-size: 1.05em; }
     h5 { font-size: 1em; }
     .simplified-triggers-group .checkbox-label { white-space: normal; }
-    .overview-toggle-btn { padding: 4px 6px; font-size: 1em; top: 8px; right: 8px;}
+    .overview-toggle-btn { padding: 4px 6px; font-size: 1em; }
     .simplified-char-info { flex-direction: column; align-items: flex-start; }
     .simplified-final-damage { margin-left: 0; }
 }
