@@ -2,51 +2,119 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- IMPORTANT for responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>高级伤害预测器</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="global-settings-bar">
-        <div class="settings-bar-content">
-            <label class="checkbox-label">
-                <input type="checkbox" id="showFormulaTraceGlobal"> 显示计算流程
-            </label>
-        </div>
-    </div>
-
-    <div class="global-container">
-        <div class="enemy-card-container card">
-            <h2>敌人设置</h2>
-            <div class="enemy-input-group">
-                <label for="enemyDefenseGlobal">敌防御力:</label>
-                <input type="number" id="enemyDefenseGlobal" value="500">
+    <div class="main-container">
+        <div class="overview-panel card" id="overviewPanel">
+            <div class="overview-header">
+                <div class="overview-simplified-display" id="overviewSimplifiedDisplay">
+                    <div class="simplified-char-info">
+                        <span class="simplified-char-name" title="当前角色名称">当前: <span id="simplifiedCharNameDisplay">-</span></span>
+                    </div>
+                    <div class="simplified-triggers-group" id="simplifiedTriggersContainer">
+                        {/* JS will populate this */}
+                    </div>
+                    <span class="simplified-final-damage" title="最终伤害">伤害: <span id="simplifiedDamageDisplay">-</span></span>
+                </div>
+                <div class="overview-full-content-placeholder" style="flex-grow: 1;"></div>
+                <button type="button" id="toggleOverviewBtn" class="overview-toggle-btn" aria-label="收起概览">▲</button>
             </div>
-            <div class="enemy-input-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="enemyHasCoreGlobal" checked> 有核心
-                </label>
+            <div class="overview-content">
+                <div class="overview-grid">
+                    <div class="overview-section character-quick-view">
+                        <h3>当前角色: <span id="currentQuickViewCharName">角色 1</span></h3>
+                        
+                        <div class="input-group skill-display-group-overview">
+                            <label>武器/技能倍率 (同步):</label>
+                            <div class="skill-display-value-wrapper">
+                                <span id="quickViewSkillMultiplier_value_display">0</span>
+                                <span class="input-suffix-internal">%</span>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="quickViewSkillMultiplier_isTriggered_display" data-field-name="selectedSkillMultiplier_isTriggered_QUICKVIEW_DISPLAY" disabled>触发
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="input-group core-choice-group-overview">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="quickViewCoreDamageBaseTrigger" data-field-name="coreDamageBaseChoiceTriggered_isTriggered_QUICKVIEW"> 核心伤触发
+                            </label>
+                            <select id="quickViewCoreDamageBaseChoice" data-field-name="coreDamageBaseChoice_QUICKVIEW" class="core-damage-select">
+                                <option value="2">+200%</option>
+                                <option value="2.5">+250%</option>
+                            </select>
+                        </div>
+                        <div class="input-group charge-choice-group-overview">
+                             <label class="checkbox-label">
+                                <input type="checkbox" id="quickViewChargeUpBaseTrigger" data-field-name="chargeUpBase_isTriggered_QUICKVIEW"> 蓄力基础触发
+                            </label>
+                            <select id="quickViewChargeUpBaseValue" data-field-name="chargeUpBase_value_QUICKVIEW" class="charge-value-select">
+                                <option value="1" hidden>无 (1x)</option>
+                                <option value="2">2x</option>
+                                <option value="2.5">2.5x</option>
+                                <option value="3.5">3.5x</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overview-section enemy-settings-overview">
+                        <h3>敌人设置</h3>
+                        <div class="input-group">
+                            <label for="enemyDefenseGlobal">敌防御力:</label>
+                            <input type="number" id="enemyDefenseGlobal" value="500">
+                            <label class="checkbox-top-right">
+                                <input type="checkbox" id="enemyHasCoreGlobal" checked>有核心
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="overview-section damage-triggers-overview">
+                        <div class="final-damage-display-container">
+                            <span>最终伤害:</span>
+                            <span class="final-damage-output-display overview-damage" id="finalDamageResult_overview"> - </span>
+                        </div>
+                         <div class="input-group">
+                            <label for="quickViewAttackCount">攻击次数:</label>
+                            <input type="number" id="quickViewAttackCount" data-field-name="attackCount_QUICKVIEW" value="1" min="1" step="1">
+                        </div>
+                        <div class="core-conditional-triggers">
+                            <label class="checkbox-label"><input type="checkbox" id="quickViewCritTrigger" data-field-name="critDamageUp_isTriggered_QUICKVIEW"> 暴击触发 (基础+50%)</label>
+                            <label class="checkbox-label"><input type="checkbox" id="quickViewDistanceUp" data-field-name="distanceUp_isTriggered_QUICKVIEW"> 距离UP (+30%)</label>
+                            <label class="checkbox-label"><input type="checkbox" id="quickViewBurstUp" data-field-name="burstUp_isTriggered_QUICKVIEW"> 爆裂UP (+50%)</label>
+                            <label class="checkbox-label"><input type="checkbox" id="quickViewSuperiorityUpBase" data-field-name="superiorityUp_isBaseTriggered_isTriggered_QUICKVIEW"> 优越UP (基础 +10%)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="formula-trace-toggle-container input-group">
+                     <label class="checkbox-label"><input type="checkbox" id="showFormulaTraceGlobal"> 显示计算流程</label>
+                </div>
             </div>
+            <div class="formula-trace-area global-trace" id="formulaTrace_overview"></div>
         </div>
 
-        <div class="character-tabs">
-            <!-- Tabs will be generated by JS (main.js -> ui_render.js) -->
-        </div>
-
-        <div id="character-panels-container">
-            <!-- Character panels will be generated by JS (main.js -> ui_render.js) -->
+        <div class="tabs-and-panels-container">
+            <div class="character-tabs"></div>
+            <div id="character-panels-container"></div>
         </div>
 
         <div class="io-section-footer card">
-            <button type="button" id="exportConfigButton">导出配置 (JSON)</button>
-            <label class="file-import-label">
-                导入配置 (JSON):
-                <input type="file" id="importConfigFile" accept=".json,.txt">
-            </label>
+            <h3>配置管理</h3>
+            <div class="io-section-content">
+                <div class="input-group export-group">
+                    <button type="button" id="exportConfigButton">导出配置</button>
+                </div>
+                <div class="input-group import-group">
+                    <label for="importConfigFile">导入配置:</label>
+                    <input type="file" id="importConfigFile" accept=".json">
+                </div>
+            </div>
+            <p style="font-size: 0.85em; color: var(--medium-text-color); margin-top: 10px;"><i>导入配置后，页面将使用文件中的数据刷新。请确保文件来源可靠。</i></p>
         </div>
     </div>
 
-    <!-- JavaScript Files - ORDER MATTERS! -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/ui_helpers.js"></script>
