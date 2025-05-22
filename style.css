@@ -1,4 +1,4 @@
-/* style.css */
+/* style.css - Intended Complete Version */
 :root {
     --primary-color: #007bff;
     --primary-hover-color: #0056b3;
@@ -11,16 +11,20 @@
     --light-text-color: #6c757d;
     --border-color: #dee2e6;
     --card-bg-color: #ffffff;
-    --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --card-shadow: 0 2px 6px rgba(0,0,0,0.07);
     --border-radius: 6px;
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --overview-simplified-height: 50px; 
+    --tabs-height: 42px;
 }
+
+html { box-sizing: border-box; }
+*, *:before, *:after { box-sizing: inherit; }
 
 body {
     font-family: var(--font-family);
     line-height: 1.6;
     margin: 0;
-    padding: 0; /* Body padding removed, managed by containers */
     background-color: #eef2f5;
     color: var(--dark-text-color);
     font-size: 14px;
@@ -28,526 +32,592 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.global-settings-bar {
-    background-color: var(--card-bg-color);
-    padding: 10px 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    margin-bottom: 15px;
-    position: sticky; /* Make settings bar sticky */
-    top: 0;
-    z-index: 1001; /* Higher than character panel header */
-}
-.settings-bar-content {
+.main-container {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 0 15px;
-    text-align: right;
-}
-
-.global-container {
-    max-width: 1100px;
-    margin: 0 auto 20px auto; /* Added bottom margin */
-    padding: 0 15px; /* Padding for content within container */
+    padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-h2, h3, h4, h5 {
-    color: var(--dark-text-color);
-    margin-top: 0;
-    font-weight: 600;
-    word-break: break-word; /* Ensure headers wrap */
-}
-h2 { text-align: center; margin-bottom: 25px; font-size: 2em; }
-h3 { margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; font-size: 1.5em;}
-h4 { margin-bottom: 12px; font-size: 1.2em; color: #34495e; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;} /* Allow h4 to wrap */
-h5 { font-size: 1.1em; color: var(--primary-color); margin-bottom: 10px; display: flex; align-items: center; font-weight: 500; flex-wrap: wrap; gap: 5px;}
+h3 { margin-bottom: 15px; font-size: 1.2em; color: var(--primary-color); word-break: break-word;}
+h4 { margin-bottom: 10px; font-size: 1.15em; color: #34495e; word-break: break-word; display: flex; align-items: center; gap: 5px;}
+h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-weight: 500;word-break: break-word; display: flex; align-items: center; gap: 5px;}
 
-
-/* Card Base Style */
 .card {
     background: var(--card-bg-color);
-    padding: 20px 25px;
+    padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
     border: 1px solid var(--border-color);
 }
 
-/* Enemy Card */
-.enemy-input-group { display: flex; align-items: center; margin-bottom: 15px; gap: 10px; flex-wrap: wrap; }
-.enemy-input-group label:not(.checkbox-label) { font-weight: 500; min-width: 90px; flex-shrink: 0; }
-.enemy-input-group input[type="number"] {
-    padding: 9px 12px;
+.input-with-suffix-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.input-with-suffix-wrapper input[type="number"] {
+    flex-grow: 1;
+    padding-right: 25px; 
+}
+.input-with-suffix-wrapper .input-suffix-internal {
+    position: absolute;
+    right: 8px; 
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--medium-text-color);
+    pointer-events: none;
+    font-size: 0.9em;
+}
+
+
+.overview-panel {
+    position: sticky;
+    top: 0;
+    z-index: 1002;
+    margin-bottom: 20px;
+}
+.overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: var(--overview-simplified-height);
+    padding: 10px;
+    position: relative; 
+}
+
+.overview-simplified-display {
+    display: none; 
+    flex-grow: 1; 
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    gap: 10px; 
+    font-size: 1em; 
+}
+.overview-panel.simplified .overview-simplified-display { display: flex; }
+.overview-panel.simplified .overview-full-content-placeholder { display: none; }
+.overview-panel:not(.simplified) .overview-simplified-display { display: none; }
+
+
+.simplified-char-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0; 
+}
+.simplified-char-name {
+    color: var(--primary-color);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px; 
+    font-size: 1.05em;
+}
+
+.simplified-triggers-group {
+    display: flex;
+    gap: 5px; 
+    align-items: center;
+    flex-shrink: 1; 
+    min-width: 0; 
+    overflow-x: auto;
+    margin: 0 10px; 
+}
+.simplified-triggers-group .checkbox-label,
+.simplified-triggers-group .select-label {
+    font-size: 0.8em;
+    margin-bottom: 0;
+    white-space: nowrap;
+    padding: 2px 3px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+}
+.simplified-triggers-group .checkbox-label input[type="checkbox"] {
+    margin-right: 2px;
+    transform: scale(0.8);
+}
+.simplified-triggers-group .charge-value-select-simplified {
+    font-size: 0.9em; 
+    padding: 1px 2px;
+    margin-left: 2px;
+    border-radius: 3px;
+    border: 1px solid var(--border-color);
+    max-width: 60px; 
+    line-height: normal; 
+    height: auto; 
+}
+
+.simplified-final-damage {
+    color: var(--danger-color);
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 1.05em;
+    margin-left: auto; 
+    flex-shrink: 0; 
+}
+
+.overview-toggle-btn {
+    background: none;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    box-sizing: border-box;
-    width: 150px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 5px 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    line-height: 1;
+    flex-shrink: 0; 
+    margin-left: 10px; 
 }
-.enemy-input-group input[type="number"]:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-}
-.checkbox-label { display: flex; align-items: center; cursor: pointer; font-weight: normal;}
-.checkbox-label input[type="checkbox"] { margin-right: 8px; width: auto; height: auto; accent-color: var(--primary-color); }
 
 
-/* Character Tabs */
+.overview-content {
+    overflow: hidden;
+    transition: opacity 0.3s ease-out, max-height 0.4s ease-out, margin-top 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
+    max-height: 1200px; 
+    opacity: 1;
+    padding-top: 0;
+}
+.overview-panel.simplified .overview-content {
+    max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; margin-top: 0;
+    visibility: hidden;
+}
+.overview-panel.simplified .formula-trace-toggle-container,
+.overview-panel.simplified .global-trace {
+    display: none !important;
+}
+
+.overview-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; align-items: start;
+    margin-top: 15px;
+}
+.overview-section {
+    padding: 15px; border: 1px solid #eee; border-radius: var(--border-radius);
+    background-color: var(--light-bg-color);
+}
+.overview-section h3 { margin-top:0; border-bottom: 1px solid #ddd; padding-bottom: 8px;}
+
+.input-group {
+    position: relative; display: flex; flex-direction: column;
+    margin-bottom: 12px; gap: 5px;
+}
+.input-group label:not(.checkbox-label):not(.checkbox-top-right) {
+    font-weight: 500; font-size: 0.95em; color: var(--medium-text-color);
+    display: block;
+}
+.input-group input[type="number"], .input-group select {
+    padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%;
+    font-size: 1em;
+}
+.input-group input[type="number"]:focus, .input-group select:focus {
+    outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0,123,255,.2);
+}
+
+.checkbox-label { display: flex; align-items: center; font-weight: normal; cursor: pointer; }
+.checkbox-label input[type="checkbox"] { margin-right: 6px; accent-color: var(--primary-color); }
+
+.checkbox-top-right {
+    position: absolute; top: 0; right: 0; font-size: 0.9em;
+    display: flex; align-items: center; color: var(--medium-text-color);
+    padding: 3px 0;
+    line-height: 1.2;
+    height: auto;
+}
+.checkbox-top-right input[type="checkbox"] { margin-right: 4px; transform: scale(0.9); }
+
+.skill-display-group-overview {
+    margin-bottom: 12px;
+}
+.skill-display-group-overview label {
+     font-weight: 500; font-size: 0.95em; color: var(--medium-text-color); display: block; margin-bottom: 5px;
+}
+.skill-display-value-wrapper {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 4px; background-color: #e9ecef;
+    position: relative; /* For suffix positioning */
+}
+#quickViewSkillMultiplier_value_display {
+    font-weight: bold;
+    flex-grow: 1; /* Allow text to take space */
+}
+/* Suffix for skill display, distinct from input-suffix-internal for inputs */
+.skill-display-value-wrapper .skill-display-suffix {
+    color: var(--medium-text-color);
+    font-size: 0.9em;
+    margin-left: 4px; /* Space from value */
+}
+.skill-display-group-overview .checkbox-label {
+    margin-left: auto; 
+}
+
+
+.core-choice-group-overview, .charge-choice-group-overview {
+    display: flex; flex-direction: row; align-items: center; gap: 10px;
+    margin-top: 10px; flex-wrap: wrap;
+}
+.core-choice-group-overview .checkbox-label, .charge-choice-group-overview .checkbox-label { margin-bottom: 0; }
+.charge-choice-group-overview label[for="quickViewChargeUpBaseValue"] { margin-right: 5px; }
+.core-choice-group-overview select, .charge-choice-group-overview select {
+    width: auto; flex-grow: 1; min-width: 80px; margin-bottom: 0;
+}
+
+.final-damage-display-container {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 1.2em; font-weight: bold; padding: 8px 12px;
+    background-color: #e9ecef; border-radius: var(--border-radius); margin-bottom: 15px;
+}
+.final-damage-output-display.overview-damage { color: var(--danger-color); }
+.core-conditional-triggers { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+
+.formula-trace-toggle-container { margin-top: 15px; padding-top:15px; border-top: 1px solid var(--border-color); }
+
+.formula-trace-area {
+    display: none;
+    background-color: #fdfdfd;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+.formula-trace-area.visible { display: block; }
+.trace-step { margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px dotted #eee; }
+.trace-step:last-child { border-bottom: none; margin-bottom: 0; }
+.trace-value { font-weight: bold; color: var(--primary-color); }
+.trace-comment { color: var(--secondary-color); font-style: italic; font-size: 0.9em; }
+
 .character-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    border-bottom: 2px solid var(--primary-color);
-    margin-bottom: -2px;
-    position: sticky;
-    top: 47px; /* Height of global-settings-bar + its margin, adjust if necessary */
-    background-color: #eef2f5; /* Match body bg to avoid content showing through during scroll */
-    z-index: 1000; /* Below settings bar, above panel header */
-    padding-top: 5px; /* Small padding to lift tabs a bit */
+    display: flex; border-bottom: 2px solid var(--primary-color);
+    margin-bottom: -1px; position: sticky;
+    top: var(--overview-simplified-height);
+    background-color: #eef2f5; z-index: 1000; padding: 0; width: 100%;
+    transition: top 0.3s ease-out;
 }
 .tab-button {
-    padding: 12px 20px;
-    border: 1px solid var(--border-color);
-    border-bottom: none;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-    cursor: pointer;
-    background-color: var(--light-bg-color);
-    margin-right: 5px;
-    margin-bottom: -2px;
-    font-weight: 500;
-    color: var(--medium-text-color);
+    flex-grow: 1; flex-basis: 0;
+    border: 1px solid transparent; border-bottom: none;
+    border-left-color: var(--border-color);
+    cursor: pointer; background-color: var(--light-bg-color);
+    text-align: center; font-weight: 500; color: var(--medium-text-color);
+    min-width: 100px;
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    padding: 10px 5px;
     position: relative;
-    white-space: nowrap; /* Prevent tab text from wrapping */
-    overflow: hidden;
-    text-overflow: ellipsis; /* Add ellipsis if tab text is too long */
-    max-width: 180px; /* Limit tab width */
 }
-.tab-button:hover { background-color: #e2e6ea; }
-.tab-button.active {
-    background-color: var(--card-bg-color);
-    border-color: var(--primary-color) var(--primary-color) var(--card-bg-color) var(--primary-color);
-    border-width: 2px 1px 2px 1px;
-    border-style: solid;
-    font-weight: 600;
-    color: var(--primary-color);
-    z-index: 2;
+.tab-char-name-display {
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 3px;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: text; 
 }
 
-/* Character Panel */
-.character-panel {
-    display: none;
-    border: 1px solid var(--primary-color);
-    border-top: none;
+.tab-button input.tab-char-name-input-edit {
     background: var(--card-bg-color);
+    border: 1px solid var(--primary-color);
+    text-align: center;
+    font-weight: 500;
+    color: var(--dark-text-color);
+    padding: 8px 5px;
+    width: calc(100% - 4px); 
+    font-size: inherit;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0,123,255,.3);
+    position: absolute;
+    left: 2px; 
+    top: 50%; transform: translateY(-50%);
+    z-index: 10;
+}
+
+
+.tab-button:first-child { border-left-color: transparent; }
+.tab-button.active {
+    background-color: var(--card-bg-color); color: var(--primary-color);
+    border-top: 2px solid var(--primary-color);
+    border-left: 1px solid var(--primary-color);
+    border-right: 1px solid var(--primary-color);
+    border-bottom: 1px solid var(--card-bg-color);
+    font-weight: 600; position: relative; z-index: 1; margin-bottom: -1px;
+}
+.tab-button.active:first-child { border-left: 2px solid var(--primary-color); }
+.tab-button.active:last-child { border-right: 2px solid var(--primary-color); }
+.tab-button.active .tab-char-name-display {
+    font-weight: 600;
+}
+
+
+.character-panel { display: none; padding: 20px; background-color: var(--card-bg-color);
+    border: 1px solid var(--primary-color); border-top: none;
     border-radius: 0 0 var(--border-radius) var(--border-radius);
-    box-shadow: var(--card-shadow);
-    position: relative;
-    /* overflow: hidden; /* Let panel content scroll */
 }
 .character-panel.active { display: block; }
 
-.character-header {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--card-bg-color);
-    position: sticky;
-    top: calc(47px + 46px); /* Height of global-settings-bar + character-tabs, adjust based on actual heights */
-    z-index: 999; /* Below tabs */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    gap: 15px;
+.base-stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px; margin-bottom: 20px;
 }
-.character-panel-content {
-    padding: 25px;
-    /* max-height calculation needs to be dynamic or very generous if headers are sticky.
-       Let's remove max-height for now and rely on page scroll.
-       If you want internal panel scroll, this needs careful calculation. */
-    /* max-height: calc(100vh - 250px); /* Example: Adjust based on total sticky header heights */
-    /* overflow-y: auto; */
-}
+.base-stats-grid .input-group { margin-bottom: 0; }
+.base-stats-grid .input-group label { font-weight: 500; }
+.base-stats-grid .input-group input, .base-stats-grid .input-group select { width: 100%; padding: 8px 10px; }
 
-.character-name-input {
-    font-size: 1.4em;
-    font-weight: 600;
-    border: 1px solid var(--border-color);
-    padding: 10px 15px;
-    border-radius: var(--border-radius);
-    color: var(--dark-text-color);
-    flex-grow: 1;
-    min-width: 200px;
-}
-.character-name-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-}
-
-.header-right-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-    min-width: 280px;
-    flex-shrink: 0;
-}
-.damage-and-conditional-bonuses {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    width: 100%;
-}
-.final-damage-output-display {
-    font-size: 1.4em;
-    font-weight: 700;
-    color: var(--danger-color);
-    padding: 8px 15px;
-    background-color: var(--light-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    text-align: right;
-    margin-bottom: 10px;
-    min-width: 150px;
-}
-.conditional-triggers {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 0.95em;
-    gap: 5px;
-}
-.conditional-triggers label { font-weight: normal; cursor: pointer; display: flex; align-items: center; }
-.conditional-triggers input[type="checkbox"] { margin-right: 8px; }
-
-/* Formula Trace Area Toggle & Styling */
-#showFormulaTraceGlobal:not(:checked) ~ .global-container .formula-trace-area { /* Target trace area inside global-container */
-    display: none;
-}
-.formula-trace-area {
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-    font-size: 0.9em;
-    color: var(--dark-text-color);
-    background-color: #fdfdfd;
-    border: 1px solid var(--border-color);
-    padding: 12px 15px;
-    border-radius: var(--border-radius);
-    max-height: 200px; /* Increased max height */
-    overflow-y: auto;
-    width: 100%;
-    white-space: pre-wrap;
-    word-break: break-all;
-    line-height: 1.5;
-    box-sizing: border-box;
-    transition: opacity 0.3s ease, max-height 0.3s ease;
-    margin-top: 10px; /* Space from elements above */
-}
-.formula-trace-area .trace-step {
-    margin-bottom: 4px;
-    padding-bottom: 4px;
-    border-bottom: 1px dotted #ccc;
-    word-break: break-word;
-}
-.formula-trace-area .trace-step:last-child { border-bottom: none; margin-bottom: 0;}
-.formula-trace-area .trace-value { font-weight: bold; color: var(--primary-color);}
-.formula-trace-area .trace-operator { color: #e83e8c; margin: 0 0.2em;}
-.formula-trace-area .trace-comment { color: var(--light-text-color); font-style: italic; margin-left: 10px;}
-
-
-/* Input Sections and General Inputs */
-.input-section { margin-bottom: 25px; }
-.input-section > label:not(.trigger-label):not(.bonus-label):not(.checkbox-label):not(.special-base-buff-label):not(.caster-final-label) {
-    display: block; margin-bottom: 8px; font-weight: 500;
-}
-.input-section .input-with-suffix input[type="number"], /* Target input inside .input-with-suffix */
-.input-section > input[type="number"]:not(.bonus-value-input), /* Direct child number inputs not part of bonus items */
-.input-section select {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    box-sizing: border-box;
-    background-color: var(--card-bg-color);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.input-section .input-with-suffix input[type="number"]:focus,
-.input-section > input[type="number"]:not(.bonus-value-input):focus,
-.input-section select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-}
-
-.input-with-suffix {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Gap between input and suffix */
-    /* margin-bottom: 10px; /* If this container replaces direct input margin */
-}
-.input-with-suffix input[type="number"] {
-    flex-grow: 1;
-    margin-bottom: 0;
-    width: auto; /* Allow flex to control width */
-}
-.input-suffix {
-    font-weight: 500;
-    color: var(--medium-text-color);
-    white-space: nowrap;
-}
-
-
-/* Intermediate Result Display */
 .intermediate-result-display {
-    font-size: 0.95em;
-    color: var(--primary-color);
-    margin-right: 10px;
-    font-weight: bold;
-    min-width: 60px; /* Reduced min-width as it's a prefix now */
-    text-align: left; /* Align to left for prefix style */
-    order: 0; /* Default order */
-    line-height: 1.2;
-    white-space: nowrap;
-}
-.input-section > h4 .intermediate-result-display,
-.input-section > h5 .intermediate-result-display {
-    font-size: 1em;
-}
-/* Ensure h4/h5 text also wraps */
-.input-section > h4 span:not(.intermediate-result-display),
-.input-section > h5 span:not(.intermediate-result-display) {
-    word-break: break-word;
+    font-size: 0.9em; color: var(--primary-color); margin-right: 8px;
+    font-weight: bold; min-width: 50px; text-align: left;
 }
 
-
-/* Bonus Item Styling (Grid based) */
 .bonus-item {
     display: grid;
-    /* Columns: IR, Label, Value, Suffix, AppliesTo, Remove, Trigger */
-    grid-template-columns: auto minmax(120px, 1.5fr) 1fr auto minmax(180px, 1.5fr) auto auto;
-    gap: 8px 10px;
-    align-items: center;
-    margin-bottom: 12px;
-    padding: 12px 15px;
-    border: 1px solid #e9ecef;
-    border-radius: var(--border-radius);
-    background-color: var(--light-bg-color);
-    transition: box-shadow 0.2s ease, background-color 0.2s ease;
+    grid-template-columns: auto 1fr auto; 
+    gap: 8px 10px; align-items: center; margin-bottom: 10px;
+    padding: 10px 12px; border: 1px solid #e9ecef;
+    border-radius: var(--border-radius); background-color: var(--light-bg-color);
 }
-.bonus-item:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    background-color: #fdfdfd;
+.bonus-item .intermediate-result-display { grid-column: 1 / 2; }
+.bonus-item .item-main-content { 
+    grid-column: 2 / 3; 
+    display: flex; 
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+.bonus-item .item-actions { 
+    grid-column: 3 / 4; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-end; 
+    gap: 10px; /* Increased gap */
+    justify-self: end;
 }
 
-.bonus-item .intermediate-result-display { grid-column: 1 / 2; justify-self: flex-start; padding-right: 5px; color: var(--medium-text-color); font-weight: normal;}
-.bonus-item .bonus-label.with-intermediate { grid-column: 2 / 3; font-weight: 500; white-space: normal; word-break: break-word; }
-.bonus-item .bonus-value-input,
-.bonus-item select:not(.caster-ref-select) {
-    grid-column: 3 / 4; width: 100%; padding: 9px 10px;
-    border: 1px solid var(--border-color); border-radius: var(--border-radius); margin-bottom: 0;
-    min-width: 80px; /* Ensure input is not too small */
+.item-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
 }
-.bonus-item .input-suffix {
-    grid-column: 4 / 5;
-    padding-left: 0px; /* No extra padding if grid handles gap */
-    font-weight: 500;
-    color: var(--medium-text-color);
+.item-row > label:first-child { 
+    min-width: 80px; 
     white-space: nowrap;
 }
-.bonus-item .applies-to-group {
-    grid-column: 5 / 6; display: flex; flex-wrap: wrap; gap: 8px;
-    white-space: normal; justify-self: center; font-size: 0.9em;
+.item-row .input-with-suffix-wrapper {
+    flex-grow: 1; 
 }
-.bonus-item .remove-bonus { grid-column: 6 / 7; }
-.bonus-item .trigger-label { grid-column: 7 / 8; }
+.item-row .bonus-value-input, .item-row select { 
+    flex-grow: 1;
+    min-width: 80px; 
+}
+.item-row .applies-to-group {
+    margin-left: auto; 
+}
+.item-row .special-damage-type-select {
+    min-width: 150px; 
+}
+.item-row .custom-type-input-wrapper {
+    flex-grow: 1;
+}
+.item-row .custom-type-input-wrapper.hidden {
+    display: none;
+}
 
 
-/* Charge Up Bonus Item */
-.charge-up-bonus-item {
-    /* IR, Label, Value, Suffix, SpecialCheckbox, AppliesTo, Remove, Trigger */
-    grid-template-columns: auto minmax(120px, 1.5fr) 1fr auto auto minmax(180px, 1.5fr) auto auto;
+.skill-multiplier-item .skill-type-label {
+    font-size: 0.95em;
+    padding-right: 5px;
+    white-space: nowrap;
+    min-width: 80px;
 }
-.charge-up-bonus-item .intermediate-result-display {grid-column: 1/2;}
-.charge-up-bonus-item .bonus-label.with-intermediate { grid-column: 2/3; }
-.charge-up-bonus-item .bonus-value-input { grid-column: 3/4; }
-.charge-up-bonus-item .input-suffix { grid-column: 4 / 5; }
-.charge-up-bonus-item .special-base-buff-label {
-    grid-column: 5 / 6;
-    display: flex; align-items: center; gap: 4px; font-size: 0.9em;
-    white-space: normal; word-break: break-word; justify-self: center; cursor: pointer;
+.skill-multiplier-item .selected-skill-label {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1em; /* Further increased font size */
+    text-shadow: 0 0 3px rgba(0,123,255,0.3); /* Added subtle glow */
 }
-.charge-up-bonus-item .applies-to-group { grid-column: 6 / 7; }
-.charge-up-bonus-item .remove-bonus { grid-column: 7 / 8; }
-.charge-up-bonus-item .trigger-label { grid-column: 8 / 9; }
+.skill-multiplier-item .alternate-skill-label {
+    color: var(--light-text-color);
+    font-style: italic;
+    font-size: 0.9em; /* Slightly smaller */
+}
+.skill-multiplier-item input[type="radio"] {
+    margin-right: 5px;
+}
 
 .bonus-item .remove-bonus {
-    justify-self: center; padding: 7px 12px; font-size: 0.9em;
-    background-color: var(--danger-color); color: white; border: none;
-    border-radius: var(--border-radius); cursor: pointer; transition: background-color 0.2s ease;
+    padding: 5px 8px; /* Slightly smaller padding */
+    font-size: 0.85em; /* Slightly smaller font */
+    background-color: var(--danger-color);
+    color: white; border: none; border-radius: var(--border-radius); cursor: pointer;
+    align-self: flex-end; 
 }
-.bonus-item .remove-bonus:hover { background-color: #c82333; }
-
-.bonus-item .trigger-label,
-.bonus-item .applies-to-group label,
-.special-base-buff-label {
-    font-weight: normal; margin:0; cursor: pointer; display: flex; align-items: center;
-    gap: 4px;
-    white-space: nowrap;
+.bonus-item .trigger-label {
+    font-size: 1em; /* Larger font size for trigger */
+    color: var(--dark-text-color); /* Darker color for more prominence */
+    font-weight: 500;
+    padding: 4px 6px; /* Add some padding */
+    border: 1px solid var(--border-color); /* Optional: add border */
+    border-radius: 4px;
+    background-color: #f0f0f0; /* Optional: slight background */
+    display: flex; align-items: center; white-space: nowrap;
+    cursor: pointer;
+    order: -1; /* Ensure trigger appears above remove button if actions are column */
 }
-.bonus-item .trigger-label { justify-self: flex-end; font-size: 0.95em; }
-
-.bonus-item input[type="checkbox"], .bonus-item input[type="radio"] {
-    margin: 0; vertical-align: middle; cursor: pointer; width: auto; height: auto;
-    accent-color: var(--primary-color);
+.bonus-item .trigger-label input[type="checkbox"] {
+    transform: scale(1.1); /* Make checkbox slightly larger */
+    margin-right: 8px;
 }
 
-/* Caster Effect Item Layout */
-.caster-effect-item {
-    /* IR, Label, RefStat, Multiplier, Suffix, IsFinal, AppliesTo, Remove, Trigger */
-    grid-template-columns: auto minmax(100px, 1fr) auto 0.8fr auto auto minmax(180px, 1.5fr) auto auto;
-}
-.caster-effect-item .intermediate-result-display {grid-column: 1/2;}
-.caster-effect-item .bonus-label.with-intermediate { grid-column: 2 / 3; }
-.caster-effect-item .caster-ref-select { grid-column: 3 / 4; width: 100%; padding: 9px 10px; border:1px solid var(--border-color); border-radius:var(--border-radius)}
-.caster-effect-item .bonus-value-input { grid-column: 4 / 5; }
-.caster-effect-item .input-suffix { grid-column: 5 / 6; }
-.caster-effect-item .caster-final-label { grid-column: 6 / 7; display: flex; align-items: center; gap:4px; white-space:nowrap; justify-self:center; font-size:0.9em;}
-.caster-effect-item .applies-to-group { grid-column: 7 / 8; }
-.caster-effect-item .remove-bonus { grid-column: 8 / 9; }
-.caster-effect-item .trigger-label { grid-column: 9 / 10; }
-
-/* Skill Multiplier Item Layout */
-.skill-multiplier-item {
-    /* IR, RadioSelect, Value, Suffix, (Hidden Col), Remove, Trigger */
-    grid-template-columns: auto auto 1fr auto 1px auto auto !important;
-}
-.skill-multiplier-item .intermediate-result-display { grid-column: 1/2; }
-.skill-multiplier-item input[type="radio"] { grid-column: 2 / 3; justify-self: center;}
-.skill-multiplier-item .bonus-value-input { grid-column: 3 / 4; }
-.skill-multiplier-item .input-suffix { grid-column: 4/5; }
-.skill-multiplier-item .applies-to-group { visibility: hidden; grid-column: 5 / 6; width:1px; overflow:hidden;}
-.skill-multiplier-item .remove-bonus { grid-column: 6 / 7; }
-.skill-multiplier-item .trigger-label { grid-column: 7 / 8; }
-
-
-/* Add Buttons */
-.input-section > button[type="button"] {
-    padding: 10px 18px; font-size: 1em;
-    background-color: var(--success-color); color: white; border: none;
-    border-radius: var(--border-radius); cursor: pointer; margin-top: 10px;
-    transition: background-color 0.2s ease;
-}
-.input-section > button[type="button"]:hover { background-color: #1e7e34; }
-
-/* Simplified Import/Export Footer */
-.io-section-footer {
-    margin-top: 30px; padding: 25px;
-    border-top: 1px solid var(--border-color); display: flex;
+.applies-to-group { 
+    display: flex;
+    gap: 6px;
     flex-wrap: wrap;
-    justify-content: center; align-items: center; gap: 20px;
+    justify-content: flex-start; 
+    font-size: 0.85em; /* Slightly smaller appliesTo */
+    margin-bottom: 5px; /* Add some space below appliesTo if trigger is next */
 }
-.io-section-footer button[type="button"],
-.io-section-footer .file-import-label {
-    padding: 10px 18px; font-size: 1em; border-radius: var(--border-radius); cursor: pointer;
-}
-.io-section-footer button[type="button"] {
-    background-color: var(--primary-color); color: white; border: 1px solid var(--primary-color);
-}
-.io-section-footer button[type="button"]:hover { background-color: var(--primary-hover-color); }
-.file-import-label { font-weight: 500; display: flex; align-items: center; gap: 10px; }
-.io-section-footer input[type="file"] { max-width: 280px; }
-
-.io-section-footer input[type="file"]::file-selector-button {
-    margin-right: 12px; border: 1px solid var(--secondary-color); padding: .4em .8em;
-    border-radius: .25rem; background-color: var(--secondary-color); color: white;
-    cursor: pointer; transition: background-color .15s ease-in-out,border-color .15s ease-in-out;
-}
-.io-section-footer input[type="file"]::file-selector-button:hover {
-    background-color: #545b62; border-color: #4e555b;
+.bonus-item .item-actions .applies-to-group {
+    width: 100%; /* Make applies to group take full width in actions column */
+    justify-content: flex-end; /* Align radio buttons to the right */
 }
 
-/* Responsive adjustments */
-@media (max-width: 992px) { /* More granular breakpoints */
-    .bonus-item, .charge-up-bonus-item, .caster-effect-item, .skill-multiplier-item {
-        /* Adjust columns for medium screens - e.g. 2 main content columns then stack controls */
-        grid-template-columns: auto minmax(100px, 1fr) 1fr auto; /* IR, Label, Value+Suffix, Controls stacked */
+
+.input-section > button[type="button"] {
+    padding: 9px 15px; font-size: 0.95em; background-color: var(--success-color); color: white;
+    border: none; border-radius: var(--border-radius); cursor: pointer; margin-top: 8px;
+}
+.input-section > button[type="button"]:hover {
+    background-color: #218838;
+}
+
+.io-section-footer { margin-top: 20px; }
+.io-section-footer h3 { margin-bottom: 15px; }
+.io-section-content {
+    display: flex;
+    gap: 20px;
+}
+.io-section-content > div {
+    flex: 1;
+}
+.io-section-footer button {
+    padding: 9px 15px;
+    font-size: 0.95em;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+.io-section-footer button:hover {
+    background-color: var(--primary-hover-color);
+}
+.io-section-footer input[type="file"] {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    width: 100%;
+    font-size: 0.95em;
+    margin-top: 5px;
+}
+.io-section-footer .input-group label {
+    margin-bottom: 5px;
+}
+
+
+@media (max-width: 992px) {
+    .overview-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+    .bonus-item {
+        grid-template-columns: auto 1fr; 
     }
-    .bonus-item .input-suffix { grid-column: span 1; /* Part of value cell */ }
-    .bonus-item .applies-to-group,
-    .bonus-item .remove-bonus,
-    .bonus-item .trigger-label,
-    .charge-up-bonus-item .special-base-buff-label,
-    .caster-effect-item .caster-final-label {
-        grid-column: 1 / -1; /* Stack these below */
-        justify-self: flex-start;
+    .bonus-item .item-actions {
+        grid-column: 1 / -1; 
+        flex-direction: row; 
+        justify-content: space-between; 
+        align-items: center;
+        margin-top: 8px;
+        width: 100%;
+    }
+     .bonus-item .item-main-content .applies-to-group {
         margin-top: 8px;
     }
-    .bonus-item .applies-to-group { flex-direction: row; } /* Keep appliesTo horizontal if space */
-     .caster-effect-item {
-        grid-template-columns: auto minmax(100px, 1fr) auto 1fr; /* IR, Label, RefStat, Multiplier+Suffix */
-    }
-}
+    .bonus-item .item-actions .trigger-label { order: 0;} /* Reset order for row layout */
+    .bonus-item .item-actions .applies-to-group { width: auto; justify-content: center; }
 
+
+    .io-section-content { flex-direction: column; }
+    .overview-simplified-display { 
+        flex-wrap: wrap;
+    }
+    .simplified-char-info { flex-basis: auto; margin-right: 10px; }
+    .simplified-triggers-group { flex-grow: 1; min-width: 150px; margin:0; justify-content: flex-start;}
+    .simplified-final-damage { flex-basis: auto; margin-left:auto;}
+}
 
 @media (max-width: 768px) {
-    body { padding: 0; font-size: 13px; } /* Remove body padding, global-container manages it */
-    .global-container { gap: 15px; padding: 0 10px 15px 10px; /* Padding for content */ }
-    .global-settings-bar .settings-bar-content { padding: 0 10px; }
+    :root { --overview-simplified-height: auto; } 
+    .overview-header { min-height: 45px; }
+    .overview-simplified-display {
+        font-size: 0.9em; flex-direction: column; align-items: flex-start; gap: 5px;
+    }
+    .simplified-char-info { flex-direction: row; gap: 10px; align-items: center; width: 100%; justify-content: flex-start; }
+    .simplified-final-damage { margin-left: auto; margin-top: 0; }
+    .simplified-triggers-group { width:100%; margin-top: 5px; gap: 3px 8px; justify-content: flex-start; flex-wrap:wrap; }
 
-    h2 { font-size: 1.6em; margin-bottom: 15px; }
-    h3 { font-size: 1.3em; }
-    h4 { font-size: 1.1em; }
-    h5 { font-size: 1em; }
+    .main-container { padding: 10px; }
+    .card, .character-panel { padding: 15px; }
+    .character-tabs { top: 60px;  } 
+    .tab-button { min-width: 90px; }
+    .tab-char-name-display, .tab-button input.tab-char-name-input-edit { font-size: 0.85em; padding: 8px 3px;}
 
-    .card, .character-panel-content { padding: 15px; }
-    .character-header {
-        padding: 12px 15px;
+    .base-stats-grid { grid-template-columns: 1fr; }
+    .bonus-item { grid-template-columns: 1fr; } 
+    .bonus-item > * {
+      grid-column: 1 / -1 !important;
+      justify-self: stretch !important;
+      margin-bottom: 5px;
+    }
+    .bonus-item .item-main-content .item-row {
         flex-direction: column;
-        align-items: stretch;
-        top: calc(47px + 40px); /* Adjust sticky top for smaller tab height */
+        align-items: flex-start;
     }
-    .character-name-input { font-size: 1.2em; width: 100%; margin-bottom: 10px;}
-    .header-right-content { min-width: unset; width: 100%; align-items: stretch; }
-    .final-damage-output-display { font-size: 1.2em; text-align: center; }
-
-    .tab-button { padding: 10px 12px; font-size: 0.9em; max-width: 120px; }
-    .character-tabs { top: 47px; /* Height of global-settings-bar */ }
-
-
-    .bonus-item, .charge-up-bonus-item, .caster-effect-item, .skill-multiplier-item {
-        grid-template-columns: 1fr; /* Stack all items vertically */
-        gap: 10px;
+     .bonus-item .item-main-content .item-row .input-with-suffix-wrapper,
+     .bonus-item .item-main-content .item-row select {
+        width: 100%;
     }
-    .bonus-item > *, .charge-up-bonus-item > *, .caster-effect-item > *, .skill-multiplier-item > * {
-        grid-column: 1 / -1 !important;
-        justify-self: stretch !important;
-        text-align: left !important;
+    .bonus-item .applies-to-group { flex-direction: column; gap: 5px; align-items: flex-start; }
+    .bonus-item .item-actions {
+        flex-direction: column;
+        align-items: flex-start;
     }
-    .bonus-item .bonus-value-input { width: calc(100% - 30px); /* Adjust if suffix is present */ }
-    .bonus-item .applies-to-group { flex-direction: column; align-items: flex-start; gap: 5px; }
-    .bonus-item .remove-bonus { width: auto; justify-self: flex-start !important; margin-top: 5px; }
-    .bonus-item .trigger-label { justify-self: flex-start !important; margin-top: 5px; }
-    .bonus-item .input-suffix { justify-self: flex-start; padding-left: 0; margin-top: 0; margin-left: 5px; display: inline; }
+    .bonus-item .item-actions .applies-to-group { justify-content: flex-start; }
+    .bonus-item .remove-bonus { margin-top: 10px; align-self: flex-start;}
 
-
-    .io-section-footer { flex-direction: column; gap: 15px; }
-    .io-section-footer button[type="button"], .io-section-footer .file-import-label { width: 100%; text-align: center; }
-    .io-section-footer input[type="file"] { width: 100%; max-width: none; }
+    .checkbox-top-right { position: static; margin-top: 5px; text-align: left; justify-content: flex-start; padding: 0; }
 }
-
 @media (max-width: 480px) {
-    .global-container { padding: 0 5px 10px 5px; }
-    .global-settings-bar .settings-bar-content { padding: 0 5px; }
-    .card, .character-panel-content { padding: 10px; }
-    .character-header { padding: 10px; top: calc(47px + 36px); }
-
-    body { font-size: 12px; }
-    .tab-button { padding: 8px 10px; font-size: 0.85em; margin-right: 3px; max-width: 100px;}
-    .character-name-input { font-size: 1.1em; }
-    .final-damage-output-display { font-size: 1.1em; }
-    .input-section input[type="number"], .input-section select { padding: 8px 10px; }
-    .bonus-item { padding: 10px; }
+    .tab-char-name-display, .tab-button input.tab-char-name-input-edit { font-size: 0.8em; }
+    .overview-grid { grid-template-columns: 1fr; }
+    h3 { font-size: 1.1em; }
+    h4 { font-size: 1.05em; }
+    h5 { font-size: 1em; }
+    .simplified-triggers-group .checkbox-label { white-space: normal; }
+    .overview-toggle-btn { padding: 4px 6px; font-size: 1em; top: 8px; right: 8px;}
+    .simplified-char-info { flex-direction: column; align-items: flex-start; }
+    .simplified-final-damage { margin-left: 0; }
 }
