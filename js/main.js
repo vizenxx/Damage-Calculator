@@ -52,11 +52,11 @@ function populateSimplifiedTriggers() {
 
     triggers.forEach(trigger => {
         const el = document.getElementById(`${trigger.id}Trigger_simplified`);
-        if (el) el.addEventListener('change', handleGlobalNonPanelInput); // Changed to specific handler
+        if (el) el.addEventListener('change', handleGlobalNonPanelInput);
     });
     const simplifiedChargeSelect = document.getElementById('s_chargeValue_simplified');
     if (simplifiedChargeSelect) {
-        simplifiedChargeSelect.addEventListener('change', handleGlobalNonPanelInput); // Changed to specific handler
+        simplifiedChargeSelect.addEventListener('change', handleGlobalNonPanelInput);
     }
 }
 
@@ -215,7 +215,7 @@ function handleCharacterPanelInput(event) {
 
 function handleGlobalNonPanelInput(event) {
     const target = event.target;
-    if (target.closest('.character-panel')) return; // Already handled
+    if (target.closest('.character-panel')) return; 
 
     let needsRecalc = false;
     const activeCharData = characters[activeCharacterIndex];
@@ -312,6 +312,32 @@ function updateFullOverviewFromSimplified(baseFieldName, value) {
     }
 }
 
+function switchTab(charIndex) {
+    if (charIndex < 0 || charIndex >= characters.length) { console.error("Invalid charIndex for switchTab:", charIndex); return; }
+    window.activeCharacterIndex = charIndex; 
+
+    document.querySelectorAll('.character-panel').forEach(p => p.classList.remove('active'));
+    const newActivePanel = document.getElementById(`character-panel-${charIndex}`);
+    if (newActivePanel) newActivePanel.classList.add('active');
+    else console.error(`Panel character-panel-${charIndex} not found for switching.`);
+
+    document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active'));
+    const newActiveTab = document.querySelector(`.tab-button[data-char-index="${charIndex}"]`) || document.getElementById(`tab_char_btn_${charIndex}`);
+    if (newActiveTab) newActiveTab.classList.add('active');
+    else console.error(`Tab button for charIndex ${charIndex} not found.`);
+
+    if (typeof recalculateAllCharacterDamages === 'function') {
+        recalculateAllCharacterDamages(); 
+    } else {
+        console.error("recalculateAllCharacterDamages is not defined in switchTab context.");
+    }
+
+    if (typeof updateOverviewPanel === 'function') {
+        updateOverviewPanel(window.activeCharacterIndex);
+    }
+}
+
+
 function updateOverviewPanel(charIndex) {
     const isInvalidChar = charIndex < 0 || charIndex >= characters.length || !characters[charIndex];
     const charData = isInvalidChar ? null : characters[charIndex];
@@ -343,7 +369,6 @@ function updateOverviewPanel(charIndex) {
     document.getElementById('currentQuickViewCharName').textContent = charData?.name || '-';
     
     const selectedSkill = charData?.skillMultipliers?.find(s => s.id === charData.selectedSkillMultiplierId && s.isTriggered);
-    // Corrected IDs and property for span:
     const qvSkillMultValueEl = document.getElementById('quickViewSkillMultiplier_value_display');
     const qvSkillTriggerEl = document.getElementById('quickViewSkillMultiplier_isTriggered_display');
 
@@ -399,9 +424,11 @@ function recalculateAllCharacterDamages() {
         }
     });
     
-    if (activeCharacterIndex >= 0 && activeCharacterIndex < characters.length && typeof updateOverviewPanel === 'function') {
-        updateOverviewPanel(activeCharacterIndex);
-    } else if (characters.length === 0 && typeof updateOverviewPanel === 'function') {
-        updateOverviewPanel(-1);
+    if (typeof updateOverviewPanel === 'function') {
+        if (window.activeCharacterIndex >= 0 && window.activeCharacterIndex < characters.length) {
+            updateOverviewPanel(window.activeCharacterIndex);
+        } else if (characters.length === 0) {
+            updateOverviewPanel(-1);
+        }
     }
 }
