@@ -1,7 +1,7 @@
 // js/main.js
 // (Keep everything else the same as the previous complete version)
 // Only showing the modified handleGlobalNonPanelInput and populateSimplifiedTriggers
-// AND setupStickyTabsObserver and updateStickyTabsPosition
+// AND setupStickyTabsObserver and updateOverviewPanelHeightVar (previously updateStickyTabsPosition)
 
 function populateSimplifiedTriggers() {
     const container = document.getElementById('simplifiedTriggersContainer');
@@ -13,7 +13,7 @@ function populateSimplifiedTriggers() {
         { id: 's_burst', label: '爆', fieldName: 'burstUp_isTriggered_QUICKVIEW', title: '爆裂UP' },
         { id: 's_sup', label: '优', fieldName: 'superiorityUp_isBaseTriggered_isTriggered_QUICKVIEW', title: '优越UP(基础)' },
         { id: 's_core', label: '核', fieldName: 'coreDamageBaseChoiceTriggered_isTriggered_QUICKVIEW', title: '核心伤触发' },
-        { id: 's_charge_trig', label: '蓄', fieldName: 'chargeUpBase_isTriggered_QUICKVIEW', title: '蓄力基础触发'} // Label changed
+        { id: 's_charge_trig', label: '蓄', fieldName: 'chargeUpBase_isTriggered_QUICKVIEW', title: '蓄力基础触发'}
     ];
 
     let html = '';
@@ -109,7 +109,6 @@ function handleGlobalNonPanelInput(event) {
     }
 }
 
-// Full main.js for completeness (with modifications to setupStickyTabsObserver and updateStickyTabsPosition):
 document.addEventListener('DOMContentLoaded', () => {
     try {
         initApplication();
@@ -118,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         populateSimplifiedTriggers(); 
         setupBackgroundControls(); 
         setupPanelOpacityControls(); 
-        setupStickyTabsObserver(); // This now mainly sets --overview-panel-height
+        setupStickyTabsObserver(); 
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -154,7 +153,7 @@ function setupGlobalUITogglesAndInteractions() {
             const isSimplified = overviewPanel.classList.toggle('simplified');
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
-            updateOverviewPanelHeightVar(); // Changed from updateStickyTabsPosition
+            updateOverviewPanelHeightVar(); 
         });
     }
 }
@@ -240,7 +239,6 @@ function setupPanelOpacityControls() {
     }
 }
 
-// Renamed and simplified: This function now only updates the CSS variable for overview panel height.
 function updateOverviewPanelHeightVar() {
     const overviewPanel = document.getElementById('overviewPanel'); 
     if (overviewPanel) {
@@ -249,15 +247,15 @@ function updateOverviewPanelHeightVar() {
     }
 }
 
-function setupStickyTabsObserver() { // Name kept for consistency, but behavior changed
+function setupStickyTabsObserver() { 
     const overviewPanel = document.getElementById('overviewPanel');
     if (!overviewPanel) return;
 
-    updateOverviewPanelHeightVar(); // Initial call
+    updateOverviewPanelHeightVar(); 
 
     const observer = new ResizeObserver(entries => {
         for (let entry of entries) {
-            updateOverviewPanelHeightVar(); // Update on resize
+            updateOverviewPanelHeightVar(); 
         }
     });
 
