@@ -1,5 +1,5 @@
 // js/main.js
-// (This is the complete main.js with all previous functionalities and the sticky tab adjustments)
+// (Full file as provided in the previous step - no changes needed in JS for these specific CSS/HTML fixes)
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -185,7 +185,6 @@ function updateStickyTabsPosition() {
         const stickyTopPosition = overviewHeight + showcaseHeightValue;
         tabsAndPanelsContainer.style.top = `${stickyTopPosition}px`;
         
-        // Update CSS variables that might be used by other elements (like .character-tabs if it were independently sticky)
         document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
         document.documentElement.style.setProperty('--tabs-and-panels-sticky-top', `${stickyTopPosition}px`); 
     }
