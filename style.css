@@ -25,7 +25,9 @@
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     
     --overview-panel-height: 50px; /* JS will update this based on actual overview panel height */
-    --background-showcase-height: 350px; 
+    /* --background-showcase-height is now dynamic, set by JS */
+    --dynamic-showcase-height: 350px; /* Default/fallback, JS will override */
+
 
     --panel-bg-primary-alpha: 1; 
     --panel-bg-secondary-alpha: 1; 
@@ -87,7 +89,7 @@ body {
     flex-direction: column;
     gap: 0; 
     position: relative; 
-    z-index: 1; /* Ensure main-container establishes a base stacking context */
+    z-index: 1;
 }
 
 h3 { 
@@ -170,7 +172,7 @@ h5 {
 .overview-panel { 
     position: sticky;
     top: 0; 
-    z-index: 1002; /* Highest z-index for the top sticky panel */
+    z-index: 1002; /* Highest */
     max-height: 95vh; 
     display: flex; 
     flex-direction: column;
@@ -332,50 +334,46 @@ h5 {
 
 
 .background-showcase-area {
-    height: var(--background-showcase-height); /* 350px */
-    position: sticky; /* Stick below the overview panel */
-    top: var(--overview-panel-height); /* Position it right after the overview panel */
-    z-index: 1001; /* Below overview-panel (1002), but above main-scrollable-area (default or lower) */
-    pointer-events: none; /* Allows clicks to pass through if it's just for visual effect */
+    height: var(--dynamic-showcase-height); /* Controlled by JS */
+    /* No position: sticky, no z-index, no ::before for gradient */
+    /* It's just a spacer now, its height affects padding of .main-scrollable-content */
+    pointer-events: none; 
 }
 
-.background-showcase-area::before { 
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, 
-        rgba(var(--dark-bg-primary-rgb), 1) 0%,      /* Fully opaque (page background) at its top */
-        rgba(var(--dark-bg-primary-rgb), 0.9) 20%,
-        rgba(var(--dark-bg-primary-rgb), 0.3) 70%, 
-        rgba(var(--dark-bg-primary-rgb), 0) 100%     /* Fully transparent at its bottom */
-    );
-    /* z-index: 1; /* Not strictly necessary as it's a pseudo-element of its parent */
-}
-
-.main-scrollable-area {
-    /* This container holds all content that scrolls "behind" the showcase area.
-       Its top padding must account for the height of BOTH sticky elements above it. */
-    padding-top: calc(var(--overview-panel-height) + var(--background-showcase-height));
-    position: relative; /* Establishes a stacking context for its children if needed, and for z-index to apply */
-    z-index: 10; /* Ensures it's above default body content but well below sticky elements */
+.main-scrollable-content {
+    /* This container's top padding must account for overview panel AND showcase area */
+    padding-top: calc(var(--overview-panel-height) + var(--dynamic-showcase-height));
+    position: relative;
+    z-index: 10; /* Below overview (1002) */
 }
 
 .tabs-and-panels-container {
-    position: relative; 
-    /* z-index: 1; /* Relative to main-scrollable-area's context */
-    /* Background color is important if showcase area becomes transparent and content needs to be hidden */
-    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
+    position: relative;
+    /* This container will have the mask for fading out content */
+    -webkit-mask-image: linear-gradient(to bottom, 
+        rgba(0,0,0,1) calc(100% - 100px - var(--dynamic-showcase-height)), /* Start fading above its bottom */
+        rgba(0,0,0,0) calc(100% - var(--dynamic-showcase-height)) /* Fully transparent at its bottom relative to showcase area */
+    );
+    mask-image: linear-gradient(to bottom, 
+        rgba(0,0,0,1) calc(100% - 100px - var(--dynamic-showcase-height)), 
+        rgba(0,0,0,0) calc(100% - var(--dynamic-showcase-height))
+    );
+    /* mask-image: linear-gradient(to top, transparent 0%, black 100px); */ /* simpler fade from top */
+    /* Alternative for panel fade:
+       The mask should be applied to character-panels-container, and its gradient should
+       be relative to the top of character-panels-container after tabs are sticky.
+       This is complex with dynamic heights. Let's try the simpler approach on tabs-and-panels-container first.
+    */
 }
 
 .character-tabs {
-    /* No longer sticky */
+    position: sticky; /* Will stick to the top of .main-scrollable-content's viewport area */
+    top: calc(var(--overview-panel-height) + var(--dynamic-showcase-height)); /* Stick below overview and showcase */
+    z-index: 100; /* Above other content in .main-scrollable-content, but below .overview-panel */
+    
     display: flex;
     border-bottom: 2px solid var(--primary-accent-color);
-    /* background-color can be inherited or set explicitly to match tabs-and-panels-container */
-    /* background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); */
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
     
     padding: 0;
     width: 100%;
@@ -611,13 +609,19 @@ h5 {
     border-top: 2px solid var(--primary-accent-color); 
     border-left: 1px solid var(--primary-accent-color);
     border-right: 1px solid var(--primary-accent-color);
-    margin-bottom: -2px; /* Pull up to overlap .character-tabs border-bottom */
-    padding-bottom: calc(12px + 2px); /* Compensate for margin-bottom pull, ensure consistent height */
+    /* margin-bottom: -2px; /* No longer needed if tabs are sticky inside scroll container */
+    /* padding-bottom: calc(12px + 2px); /* Not needed if margin-bottom is removed */
 
-
-    font-weight: 600; position: relative; z-index: 1; 
+    font-weight: 600; position: relative; 
+    /* z-index: 1; /* Relative to other tab buttons */
     box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); 
 }
+/* Ensure active tab connects visually with character panel below */
+.character-tabs .tab-button.active {
+    margin-bottom: -2px; /* Overlap the character-tabs bottom border */
+    padding-bottom: calc(12px + 2px); /* Maintain visual height */
+}
+
 .tab-button.active:first-child { border-left: 2px solid var(--primary-accent-color); }
 .tab-button.active:last-child { border-right: 2px solid var(--primary-accent-color); }
 
@@ -749,7 +753,7 @@ h5 {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 .bonus-item .remove-bonus:hover {
-    background-color: var(--danger-color, #e53935); /* Added fallback danger color */
+    background-color: var(--danger-color, #e53935); 
     color: white;
     border-color: var(--danger-color, #e53935);
 }
@@ -816,8 +820,7 @@ h5 {
 
 .settings-footer { 
     margin-top: 30px;
-    position: relative; /* Ensure it's part of the stacking context of main-scrollable-area */
-    /* z-index: 1; /* Relative to main-scrollable-area, if needed */
+    position: relative;
 }
 .settings-footer > h3 { 
     margin-bottom: 20px;
@@ -989,7 +992,7 @@ h5 {
         min-width: auto; 
         padding: 10px 5px; 
     }
-     .tab-button.active {
+     .character-tabs .tab-button.active {
         padding-bottom: calc(10px + 2px); /* Adjust for smaller padding */
     }
     .tab-char-name-display { font-size: 0.85em; }
