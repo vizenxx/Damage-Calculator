@@ -1,5 +1,6 @@
 // js/main.js
-// (Full file including previous correct functions)
+// (Full file as provided in the previous step, with corrections below)
+
 document.addEventListener('DOMContentLoaded', () => {
     try {
         initApplication();
@@ -86,7 +87,6 @@ function setupGlobalUITogglesAndInteractions() {
             const isSimplified = overviewPanel.classList.toggle('simplified');
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
-            // Call after a short delay to allow layout reflow from class toggle
             requestAnimationFrame(updateStickyTabsPosition); 
         });
     }
@@ -176,7 +176,7 @@ function setupPanelOpacityControls() {
 function updateStickyTabsPosition() {
     const overviewPanel = document.getElementById('overviewPanel');
     const showcaseArea = document.getElementById('backgroundShowcaseArea');
-    const tabsAndPanelsContainer = document.getElementById('tabsAndPanelsContainer'); // Target the new sticky container
+    const tabsAndPanelsContainer = document.getElementById('tabsAndPanelsContainer'); 
 
     if (overviewPanel && showcaseArea && tabsAndPanelsContainer) {
         const overviewHeight = overviewPanel.offsetHeight;
@@ -185,10 +185,8 @@ function updateStickyTabsPosition() {
         const stickyTopPosition = overviewHeight + showcaseHeightValue;
         tabsAndPanelsContainer.style.top = `${stickyTopPosition}px`;
         
-        // This CSS variable can be used by CSS if needed, e.g. for the character-tabs's own top if it were also sticky
-        document.documentElement.style.setProperty('--tabs-and-panels-sticky-top', `${stickyTopPosition}px`);
-        // Update the individual overview panel height var as well
         document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
+        document.documentElement.style.setProperty('--tabs-and-panels-sticky-top', `${stickyTopPosition}px`);
     }
 }
 
