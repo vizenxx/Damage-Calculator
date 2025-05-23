@@ -96,15 +96,18 @@
             <div class="formula-trace-area global-trace" id="formulaTrace_overview"></div>
         </div>
 
+        <!-- This area's height is now controlled by JS for responsiveness -->
         <div class="background-showcase-area" id="backgroundShowcaseArea">
-            <!-- This div is primarily for its ::before pseudo-element gradient -->
+             <!-- Content of this div is not strictly necessary, its height matters -->
         </div>
 
-        <div class="main-scrollable-area">
-            <div class="tabs-and-panels-container">
+        <div class="main-scrollable-content">
+            <div class="tabs-and-panels-container" id="tabsAndPanelsContainer">
                 <div class="character-tabs" id="characterTabs">
+                    <!-- Tabs will be populated by JS -->
                 </div>
                 <div id="character-panels-container">
+                    <!-- Character panels will be populated by JS -->
                 </div>
             </div>
 
