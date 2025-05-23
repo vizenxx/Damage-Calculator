@@ -170,7 +170,7 @@ h5 {
 .overview-panel { 
     position: sticky;
     top: 0; 
-    z-index: 1002; /* Highest */
+    z-index: 1002; 
     max-height: 95vh; 
     display: flex; 
     flex-direction: column;
@@ -332,26 +332,28 @@ h5 {
 
 
 .background-showcase-area {
-    height: var(--dynamic-showcase-height); /* Controlled by JS */
+    height: var(--dynamic-showcase-height); 
     pointer-events: none; 
-    /* This is now just a spacer affecting the padding of main-scrollable-content */
 }
 
 .main-scrollable-content {
     padding-top: calc(var(--overview-panel-height) + var(--dynamic-showcase-height));
     position: relative;
-    z-index: 10; /* Below overview-panel (1002) */
+    z-index: 10;
+}
+
+.character-tabs-wrapper {
+    position: sticky;
+    top: var(--overview-panel-height); /* Stick below overview panel */
+    z-index: 100; /* Above character panels */
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); /* Match tab background */
 }
 
 .character-tabs {
-    position: sticky;
-    top: var(--overview-panel-height); /* Stick directly below the overview panel */
-    z-index: 100; /* Above character-panels-container within .main-scrollable-content */
-    
+    /* No longer sticky itself, its wrapper is sticky */
     display: flex;
     border-bottom: 2px solid var(--primary-accent-color);
-    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
-    
+    /* background-color is now on the wrapper */
     padding: 0;
     width: 100%;
     transition: background-color 0.2s ease-out;
@@ -361,24 +363,24 @@ h5 {
     scrollbar-color: var(--primary-accent-color) var(--dark-bg-secondary); 
 }
 
+.tabs-fade-overlay {
+    position: absolute;
+    bottom: -30px; /* Position below the tabs, adjust 30px fade height */
+    left: 0;
+    width: 100%;
+    height: 30px; /* Height of the fade effect */
+    background: linear-gradient(to bottom, 
+        rgba(var(--dark-bg-primary-rgb), 1) 0%, /* Match page/panel background */
+        rgba(var(--dark-bg-primary-rgb), 0) 100%
+    );
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 99; /* Below tabs (100 for wrapper), but above panels (default or lower) */
+}
+
+
 #character-panels-container {
-    position: relative; /* Needed for z-index context if children need it, and for mask */
-    /* z-index: 1; /* Below character-tabs if they were siblings and both sticky/absolute */
-    /* Fade out content that scrolls "behind" the sticky tabs */
-    /* The mask makes the top Npx of this container (character panels) fade out */
-    /* Adjust 30px to control the fade height */
-    -webkit-mask-image: linear-gradient(to bottom, 
-        transparent 0%, /* Start transparent */
-        black 30px,    /* Fully opaque after 30px */
-        black 100%      /* Opaque till the end */
-    );
-    mask-image: linear-gradient(to bottom, 
-        transparent 0%, 
-        black 30px,    
-        black 100%
-    );
-    /* To ensure the mask has an "edge" to work from if panels are empty or have margin */
-    /* padding-top: 1px;  May not be needed if panels always have content at the top */
+    position: relative; 
+    /* The overlay above will handle the fade effect */
 }
 
 
@@ -606,11 +608,11 @@ h5 {
     border-top: 2px solid var(--primary-accent-color); 
     border-left: 1px solid var(--primary-accent-color);
     border-right: 1px solid var(--primary-accent-color);
-    margin-bottom: -2px; /* Overlap the character-tabs bottom border */
-    padding-bottom: calc(12px + 2px); /* Maintain visual height */
+    margin-bottom: -2px; 
+    padding-bottom: calc(12px + 2px); 
     font-weight: 600; 
     position: relative; 
-    z-index: 1; /* Ensure active tab is above inactive ones for border overlap */
+    z-index: 1; 
     box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); 
 }
 
