@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>高级伤害预测器</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> {/* ENSURE THIS LINE IS PRESENT AND CORRECT */}
 </head>
 <body>
-    <div class="background-layer" id="backgroundLayer"></div> {/* Added for background image and gradient */}
+    <div class="background-layer" id="backgroundLayer"></div>
     <div class="main-container">
         <div class="overview-panel card" id="overviewPanel">
             <div class="overview-header">
@@ -32,7 +32,7 @@
                             <label>武器/技能倍率 (同步):</label>
                             <div class="skill-display-value-wrapper">
                                 <span id="quickViewSkillMultiplier_value_display">0</span>
-                                <span class="skill-display-suffix">%</span> {/* Changed class for specific styling */}
+                                <span class="skill-display-suffix">%</span>
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="quickViewSkillMultiplier_isTriggered_display" data-field-name="selectedSkillMultiplier_isTriggered_QUICKVIEW_DISPLAY" disabled>触发
                                 </label>
@@ -122,11 +122,11 @@
                 <input type="file" id="backgroundImageInput" accept="image/*">
             </div>
             <div class="input-group">
-                <label for="backgroundOpacitySlider">背景透明度: <span id="backgroundOpacityValue">100</span>%</label>
+                <label for="backgroundOpacitySlider">背景图片透明度: <span id="backgroundOpacityValue">100</span>%</label>
                 <input type="range" id="backgroundOpacitySlider" min="0" max="100" value="100">
             </div>
              <div class="input-group">
-                <button type="button" id="resetBackgroundButton">重置背景</button>
+                <button type="button" id="resetBackgroundButton">移除背景图片</button>
             </div>
         </div>
 
