@@ -87,7 +87,7 @@ body {
     flex-direction: column;
     gap: 0; 
     position: relative; 
-    z-index: 1;
+    z-index: 1; /* Ensure main-container establishes a base stacking context */
 }
 
 h3 { 
@@ -170,12 +170,11 @@ h5 {
 .overview-panel { 
     position: sticky;
     top: 0; 
-    z-index: 1002; /* Must be highest for sticky top */
+    z-index: 1002; /* Highest z-index for the top sticky panel */
     max-height: 95vh; 
     display: flex; 
     flex-direction: column;
     border: 1px solid var(--border-color-dark);
-    /* background-color is via .card */
 }
 .overview-header {
     display: flex;
@@ -331,16 +330,13 @@ h5 {
     display: none !important;
 }
 
-/* New wrapper for content that scrolls below the sticky overview panel */
-.scrollable-content-wrapper {
-    padding-top: var(--overview-panel-height); /* Dynamic padding based on overview panel's height */
-}
 
 .background-showcase-area {
     height: var(--background-showcase-height); /* 350px */
-    position: relative; /* Establishes stacking context and for ::before */
-    z-index: 2; /* Higher than panels scrolling underneath it, within .scrollable-content-wrapper */
-    pointer-events: none; 
+    position: sticky; /* Stick below the overview panel */
+    top: var(--overview-panel-height); /* Position it right after the overview panel */
+    z-index: 1001; /* Below overview-panel (1002), but above main-scrollable-area (default or lower) */
+    pointer-events: none; /* Allows clicks to pass through if it's just for visual effect */
 }
 
 .background-showcase-area::before { 
@@ -351,38 +347,39 @@ h5 {
     width: 100%;
     height: 100%;
     background: linear-gradient(to bottom, 
-        rgba(var(--dark-bg-primary-rgb), 1) 0%,      /* Opaque (matching page bg) at top of showcase */
-        rgba(var(--dark-bg-primary-rgb), 0.9) 15%,
-        rgba(var(--dark-bg-primary-rgb), 0.3) 60%,
-        rgba(var(--dark-bg-primary-rgb), 0) 100%     /* Transparent at bottom of showcase */
+        rgba(var(--dark-bg-primary-rgb), 1) 0%,      /* Fully opaque (page background) at its top */
+        rgba(var(--dark-bg-primary-rgb), 0.9) 20%,
+        rgba(var(--dark-bg-primary-rgb), 0.3) 70%, 
+        rgba(var(--dark-bg-primary-rgb), 0) 100%     /* Fully transparent at its bottom */
     );
-    pointer-events: none; 
-    z-index: 1; /* Internal to showcase area, ::before is behind showcase content if any */
+    /* z-index: 1; /* Not strictly necessary as it's a pseudo-element of its parent */
 }
 
+.main-scrollable-area {
+    /* This container holds all content that scrolls "behind" the showcase area.
+       Its top padding must account for the height of BOTH sticky elements above it. */
+    padding-top: calc(var(--overview-panel-height) + var(--background-showcase-height));
+    position: relative; /* Establishes a stacking context for its children if needed, and for z-index to apply */
+    z-index: 10; /* Ensures it's above default body content but well below sticky elements */
+}
 
 .tabs-and-panels-container {
-    position: relative; /* Establishes stacking context */
-    z-index: 1; /* Lower than background-showcase-area, within .scrollable-content-wrapper */
+    position: relative; 
+    /* z-index: 1; /* Relative to main-scrollable-area's context */
+    /* Background color is important if showcase area becomes transparent and content needs to be hidden */
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
 }
 
 .character-tabs {
-    /* position: sticky; */ /* REMOVED - Tabs now scroll with content */
-    /* top: calc(var(--overview-panel-height) + var(--background-showcase-height)); */ /* REMOVED */
-    /* z-index: 1000; */ /* REMOVED or significantly lowered */
-    
+    /* No longer sticky */
     display: flex;
     border-bottom: 2px solid var(--primary-accent-color);
-    /* background-color needs to be opaque enough to hide content scrolling under it, if showcase area is transparent */
-    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
-    
-    /* Removed sticky, so z-index is relative to its parent .tabs-and-panels-container
-       or its siblings if it were moved out. Kept inside for logical grouping. */
-    /* No specific z-index needed unless it has dropdowns that need to pop over other tab content. */
+    /* background-color can be inherited or set explicitly to match tabs-and-panels-container */
+    /* background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); */
     
     padding: 0;
     width: 100%;
-    transition: top 0.1s ease-out, background-color 0.2s ease-out; /* 'top' transition likely no longer relevant */
+    transition: background-color 0.2s ease-out;
     overflow-x: auto; 
     -webkit-overflow-scrolling: touch; 
     scrollbar-width: thin; 
@@ -611,17 +608,14 @@ h5 {
 .tab-button.active {
     background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
     color: var(--primary-accent-color);
-    /* Border adjustments as tabs are no longer "breaking out" of a sticky bottom border */
-    border-top: 2px solid var(--primary-accent-color); /* Keep top highlight */
+    border-top: 2px solid var(--primary-accent-color); 
     border-left: 1px solid var(--primary-accent-color);
     border-right: 1px solid var(--primary-accent-color);
-    /* border-bottom: 1px solid rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); /* Match active tab bg */
-    /* The main .character-tabs has a border-bottom. Active tab should visually connect. */
     margin-bottom: -2px; /* Pull up to overlap .character-tabs border-bottom */
-    padding-bottom: calc(12px + 2px); /* Compensate for margin-bottom pull */
+    padding-bottom: calc(12px + 2px); /* Compensate for margin-bottom pull, ensure consistent height */
 
 
-    font-weight: 600; position: relative; z-index: 1; /* z-index for active tab over inactive ones if overlapping occurs */
+    font-weight: 600; position: relative; z-index: 1; 
     box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); 
 }
 .tab-button.active:first-child { border-left: 2px solid var(--primary-accent-color); }
@@ -822,6 +816,8 @@ h5 {
 
 .settings-footer { 
     margin-top: 30px;
+    position: relative; /* Ensure it's part of the stacking context of main-scrollable-area */
+    /* z-index: 1; /* Relative to main-scrollable-area, if needed */
 }
 .settings-footer > h3 { 
     margin-bottom: 20px;
