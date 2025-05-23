@@ -1,6 +1,4 @@
 // js/main.js
-// (Full file as provided in the previous step - no changes needed in JS for these specific CSS/HTML fixes)
-
 document.addEventListener('DOMContentLoaded', () => {
     try {
         initApplication();
@@ -87,7 +85,7 @@ function setupGlobalUITogglesAndInteractions() {
             const isSimplified = overviewPanel.classList.toggle('simplified');
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
-            requestAnimationFrame(updateStickyTabsPosition); 
+            updateStickyTabsPosition(); 
         });
     }
 }
@@ -176,17 +174,21 @@ function setupPanelOpacityControls() {
 function updateStickyTabsPosition() {
     const overviewPanel = document.getElementById('overviewPanel');
     const showcaseArea = document.getElementById('backgroundShowcaseArea');
-    const tabsAndPanelsContainer = document.getElementById('tabsAndPanelsContainer'); 
+    const characterTabs = document.getElementById('characterTabs');
 
-    if (overviewPanel && showcaseArea && tabsAndPanelsContainer) {
+    if (overviewPanel && showcaseArea && characterTabs) {
         const overviewHeight = overviewPanel.offsetHeight;
-        const showcaseHeightValue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--background-showcase-height').replace('px', '')) || 350;
+        // showcaseHeight is fixed by CSS var --background-showcase-height, but we can read it if we want
+        // For simplicity, directly use the CSS variable's value or a JS constant.
+        const showcaseHeightValue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--background-showcase-height')) || 350;
         
-        const stickyTopPosition = overviewHeight + showcaseHeightValue;
-        tabsAndPanelsContainer.style.top = `${stickyTopPosition}px`;
+        const tabsTopPosition = overviewHeight + showcaseHeightValue;
+        characterTabs.style.top = `${tabsTopPosition}px`;
         
-        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
-        document.documentElement.style.setProperty('--tabs-and-panels-sticky-top', `${stickyTopPosition}px`); 
+        // Update the CSS variable that might be used by other elements for their own sticky positioning
+        // (though not strictly necessary if only tabs use this)
+        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`); // For individual overview height
+        document.documentElement.style.setProperty('--overview-plus-showcase-height', `${tabsTopPosition}px`); // For combined height
     }
 }
 
@@ -203,6 +205,7 @@ function setupStickyTabsObserver() {
 
     observer.observe(overviewPanel);
     window.addEventListener('resize', updateStickyTabsPosition);
+    // If other dynamic height changes affect layout above tabs, observe those elements too.
 }
 
 
