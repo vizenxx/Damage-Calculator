@@ -8,15 +8,15 @@
 </head>
 <body>
     <div class="background-layer" id="backgroundLayer"></div>
-    <div class="main-container" id="mainContainer">
+    <div class="main-container"> {/* Removed id="mainContainer" as it wasn't strictly needed for panel opacity via CSS vars */}
         <div class="overview-panel card" id="overviewPanel">
-            <div class="overview-header">
+            <div class="overview-header" id="overviewHeader"> {/* Added ID for height observation */}
                 <div class="overview-simplified-display" id="overviewSimplifiedDisplay">
                     <div class="simplified-char-info">
                         <span class="simplified-char-name" title="当前角色名称">当前: <span id="simplifiedCharNameDisplay">-</span></span>
                     </div>
                     <div class="simplified-triggers-group" id="simplifiedTriggersContainer">
-                        
+                        {/* JS will populate this */}
                     </div>
                     <span class="simplified-final-damage" title="最终伤害">伤害: <span id="simplifiedDamageDisplay">-</span></span>
                 </div>
@@ -97,8 +97,12 @@
         </div>
 
         <div class="tabs-and-panels-container">
-            <div class="character-tabs"></div>
-            <div id="character-panels-container"></div>
+            <div class="character-tabs" id="characterTabs"> {/* Added ID for height observation target */}
+                {/* Tabs will be populated by JS */}
+            </div>
+            <div id="character-panels-container">
+                {/* Character panels will be populated by JS */}
+            </div>
         </div>
 
         <div class="settings-footer card">
