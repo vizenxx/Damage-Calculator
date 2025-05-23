@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupSimplifiedExportImportListeners();
         populateSimplifiedTriggers(); 
         setupBackgroundControls(); 
-        setupPanelOpacityControls(); // NEW: Initialize panel opacity controls
+        setupPanelOpacityControls(); 
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ... (populateSimplifiedTriggers, setupGlobalUITogglesAndInteractions, setupBackgroundControls are the same as previous correct version) ...
 function populateSimplifiedTriggers() {
     const container = document.getElementById('simplifiedTriggersContainer');
     if (!container) return;
@@ -30,7 +29,7 @@ function populateSimplifiedTriggers() {
         { id: 's_burst', label: '爆', fieldName: 'burstUp_isTriggered_QUICKVIEW', title: '爆裂UP' },
         { id: 's_sup', label: '优', fieldName: 'superiorityUp_isBaseTriggered_isTriggered_QUICKVIEW', title: '优越UP(基础)' },
         { id: 's_core', label: '核', fieldName: 'coreDamageBaseChoiceTriggered_isTriggered_QUICKVIEW', title: '核心伤触发' },
-        { id: 's_charge_trig', label: '蓄触', fieldName: 'chargeUpBase_isTriggered_QUICKVIEW', title: '蓄力基础触发'}
+        { id: 's_charge_trig', label: '蓄', fieldName: 'chargeUpBase_isTriggered_QUICKVIEW', title: '蓄力基础触发'} // Changed "蓄触" to "蓄"
     ];
 
     let html = '';
@@ -111,6 +110,10 @@ function setupBackgroundControls() {
                 backgroundLayer.style.backgroundSize = '100% auto'; 
                 backgroundLayer.style.backgroundPosition = 'center top'; 
                 backgroundLayer.classList.add('has-image'); 
+                // Apply current opacity slider value to new image
+                const currentOpacity = parseFloat(backgroundOpacitySlider.value) / 100;
+                backgroundLayer.style.opacity = currentOpacity;
+
             }
         });
 
@@ -119,7 +122,7 @@ function setupBackgroundControls() {
             if (backgroundLayer.style.backgroundImage && backgroundLayer.style.backgroundImage !== 'none') {
                 backgroundLayer.style.opacity = opacity;
             } else {
-                 backgroundLayer.style.opacity = 1; 
+                 backgroundLayer.style.opacity = 1; // Reset to full opacity (transparent to body) if no image
             }
             backgroundOpacityValue.textContent = event.target.value;
         });
@@ -131,14 +134,19 @@ function setupBackgroundControls() {
             }
             backgroundLayer.style.backgroundImage = 'none';
             backgroundLayer.classList.remove('has-image'); 
-            backgroundOpacitySlider.value = 100;
-            backgroundLayer.style.opacity = 1; 
+            backgroundOpacitySlider.value = 100; // Reset slider
+            backgroundLayer.style.opacity = 1; // Reset layer opacity
             backgroundOpacityValue.textContent = 100;
             backgroundImageInput.value = null; 
         });
+        
+        // Initial state
         backgroundOpacityValue.textContent = backgroundOpacitySlider.value;
         if (!backgroundLayer.style.backgroundImage || backgroundLayer.style.backgroundImage === 'none') {
-            backgroundLayer.style.opacity = 1; 
+            backgroundLayer.style.opacity = 1; // Show body background fully
+        } else {
+            // If an image was somehow persisted (not by this script, but e.g. browser cache for URL)
+            backgroundLayer.style.opacity = parseFloat(backgroundOpacitySlider.value) / 100;
         }
     }
 }
@@ -150,10 +158,10 @@ function setupPanelOpacityControls() {
 
     if (panelOpacitySlider && panelOpacityValue) {
         const applyOpacity = (value) => {
-            const alpha = value / 100;
+            const alpha = parseFloat(value) / 100;
             root.style.setProperty('--panel-bg-secondary-alpha', alpha);
             root.style.setProperty('--panel-bg-tertiary-alpha', alpha);
-            // Add more if you have other panel background variables that need alpha
+            root.style.setProperty('--panel-bg-primary-alpha', alpha); // For input fields etc.
             panelOpacityValue.textContent = value;
         };
 
@@ -295,7 +303,7 @@ function handleCharacterPanelInput(event) {
 
 function handleGlobalNonPanelInput(event) {
     const target = event.target;
-    if (target.closest('.character-panel') || target.closest('.settings-footer')) return; // Ignore inputs in panels or combined settings footer
+    if (target.closest('.character-panel') || target.closest('.settings-footer')) return; 
 
     let needsRecalc = false;
     const activeCharData = characters[activeCharacterIndex];
@@ -431,7 +439,7 @@ function updateOverviewPanel(charIndex) {
         { id: 's_burstTrigger_simplified', dataKey: 'burstUp', prop: 'isTriggered', type: 'checkbox' },
         { id: 's_supTrigger_simplified', dataKey: 'superiorityUp', prop: 'isBaseTriggered', type: 'checkbox' },
         { id: 's_coreTrigger_simplified', dataKey: null, prop: 'coreDamageBaseChoiceTriggered', type: 'checkbox' },
-        { id: 's_charge_trigTrigger_simplified', dataKey: 'chargeUpBase', prop: 'isTriggered', type: 'checkbox'},
+        { id: 's_charge_trigTrigger_simplified', dataKey: 'chargeUpBase', prop: 'isTriggered', type: 'checkbox'}, // Label '蓄' in populateSimplifiedTriggers
         { id: 's_chargeValue_simplified', dataKey: 'chargeUpBase', prop: 'value', type: 'select'}
     ];
     simplifiedTriggersMap.forEach(trigger => {
