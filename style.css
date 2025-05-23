@@ -16,6 +16,7 @@
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --overview-simplified-height: 50px; 
     --tabs-height: 42px;
+    --header-height: 0px; /* Placeholder for dynamic header height if needed for calculations */
 }
 
 html { box-sizing: border-box; }
@@ -78,6 +79,10 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     top: 0;
     z-index: 1002;
     margin-bottom: 20px;
+    /* Max height for the entire panel to allow its content to scroll */
+    max-height: 95vh; /* Example: 95% of viewport height */
+    display: flex; /* Needed for children to correctly size and scroll */
+    flex-direction: column;
 }
 .overview-header {
     display: flex;
@@ -86,6 +91,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     min-height: var(--overview-simplified-height);
     padding: 10px;
     position: relative; 
+    flex-shrink: 0; /* Header should not shrink */
 }
 
 .overview-simplified-display {
@@ -95,12 +101,10 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     gap: 10px;
     font-size: 1em;
     width: 100%; 
-    overflow-x: auto; 
+    /* Removed overflow-x: auto from here; scrolling is for the main content area now */
+    overflow-x: hidden; /* Prevent horizontal scroll on simplified if not intended */
     overflow-y: hidden; 
-    -webkit-overflow-scrolling: touch; 
-    scrollbar-width: thin;
-    scrollbar-color: var(--secondary-color) var(--card-bg-color); 
-    padding-bottom: 5px; 
+    padding-bottom: 0; /* No extra padding needed if not scrolling itself */
 }
 .overview-panel.simplified .overview-simplified-display { display: flex; }
 .overview-panel:not(.simplified) .overview-simplified-display { display: none; }
@@ -119,49 +123,51 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 150px; 
+    max-width: 120px; /* Slightly reduced max-width */
     font-size: 1.05em;
 }
 
 .simplified-triggers-group {
     display: flex;
-    gap: 5px;
+    gap: 3px; /* Reduced gap */
     align-items: center;
-    flex-shrink: 0; 
-    margin: 0 5px; 
+    flex-shrink: 1; /* Allow shrinking if necessary, or set to 0 for definite overflow */
+    min-width: 0; /* Allow shrinking below content size */
+    margin: 0 3px; 
     white-space: nowrap; 
+    overflow-x: auto; /* IF simplified triggers themselves need to scroll horizontally */
+    scrollbar-width: none; /* Hide scrollbar for this small element if it appears */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+.simplified-triggers-group::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Webkit */
 }
 .simplified-triggers-group .checkbox-label,
 .simplified-triggers-group .select-label {
-    font-size: 0.8em;
+    font-size: 0.75em; /* Slightly smaller font for triggers */
     margin-bottom: 0;
     white-space: nowrap;
-    padding: 2px 3px;
+    padding: 1px 2px; /* Reduced padding */
     border-radius: 3px;
     display: flex;
     align-items: center;
     flex-shrink: 0; 
 }
 .simplified-triggers-group .checkbox-label input[type="checkbox"] {
-    margin-right: 2px;
-    transform: scale(0.8);
+    margin-right: 1px;
+    transform: scale(0.7);
 }
 .simplified-triggers-group .charge-value-select-simplified {
-    font-size: 0.9em; 
-    padding: 1px 2px;
-    margin-left: 2px;
-    border-radius: 3px;
-    border: 1px solid var(--border-color);
-    max-width: 60px; 
-    line-height: normal; 
-    height: auto; 
+    font-size: 0.8em; 
+    padding: 0px 1px;
+    max-width: 50px; 
 }
 
 .simplified-final-damage {
     color: var(--danger-color);
     font-weight: 600;
     white-space: nowrap; 
-    font-size: 1.05em;
+    font-size: 1.0em; /* Slightly smaller */
     margin-left: auto; 
     flex-shrink: 0; 
 }
@@ -180,33 +186,28 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 
 
 .overview-content {
-    overflow: hidden;
+    /* overflow: hidden; /* Managed by transition */
     transition: opacity 0.3s ease-out, max-height 0.4s ease-out, margin-top 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
-    max-height: 1200px; 
+    /* max-height: 1200px; Let it be determined by parent's max-height */
     opacity: 1;
     padding-top: 0;
+    flex-grow: 1; /* Allow content to take available vertical space */
+    overflow-y: auto; /* THIS IS THE KEY FOR VERTICAL SCROLLING OF EXPANDED CONTENT */
+    overflow-x: hidden; /* Prevent horizontal scroll on main content area */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 .overview-panel.simplified .overview-content {
-    max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; margin-top: 0;
+    max-height: 0 !important; /* Ensure it collapses */
+    opacity: 0; padding-top: 0; padding-bottom: 0; margin-top: 0;
     visibility: hidden;
+    overflow-y: hidden; /* Hide scrollbar when simplified */
 }
 .overview-panel.simplified .formula-trace-toggle-container,
 .overview-panel.simplified .global-trace {
     display: none !important;
 }
 
-.overview-simplified-display::-webkit-scrollbar {
-    height: 6px;
-}
-.overview-simplified-display::-webkit-scrollbar-track {
-    background: var(--card-bg-color); 
-    border-radius: 3px;
-}
-.overview-simplified-display::-webkit-scrollbar-thumb {
-    background-color: var(--secondary-color); 
-    border-radius: 3px;
-}
-
+/* Removed scrollbar styling for .overview-simplified-display as it should not scroll primarily */
 
 .overview-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -299,7 +300,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     border-radius: var(--border-radius);
     padding: 15px;
     margin-top: 15px;
-    max-height: 300px;
+    max-height: 300px; /* This area can scroll independently if very long */
     overflow-y: auto;
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
     font-size: 0.9em;
@@ -318,7 +319,8 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     border-bottom: 2px solid var(--primary-color);
     margin-bottom: -1px;
     position: sticky;
-    top: var(--overview-simplified-height); 
+    /* The top value should account for the height of the OVERVIEW HEADER, not the whole panel */
+    top: var(--overview-simplified-height); /* Adjust if simplified header height is dynamic */
     background-color: #eef2f5;
     z-index: 1000;
     padding: 0;
@@ -343,10 +345,13 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 }
 
 .tab-button {
-    /* flex-grow: 1; /* Allow tabs to grow if few, but rely on min-width if many */
-    flex-shrink: 0; 
-    flex-basis: auto; 
-    min-width: 90px; 
+    flex-shrink: 0; /* Prevent tabs from shrinking */
+    /* flex-grow: 1; /* Allow to grow if few tabs, but min-width will take precedence */
+    /* flex-basis: 0; /* Distribute space based on flex-grow */
+    /* We need a defined basis or min-width for overflow to work correctly with many tabs */
+    min-width: 75px; /* Adjust this value based on NUM_CHARACTERS and desired tab appearance */
+    /* For 5 tabs, 20% width each would be ideal if no scroll, but for scroll, min-width is better */
+    /* Example: if container is 320px wide, 5 tabs * 75px = 375px -> scroll */
     border: 1px solid transparent;
     border-bottom: none;
     border-left-color: var(--border-color);
@@ -359,19 +364,20 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 5px;
+    padding: 10px 3px; /* Reduced horizontal padding for tabs */
     position: relative;
     white-space: nowrap; 
 }
 .tab-char-name-display {
     display: inline-block;
-    padding: 2px 5px;
+    padding: 2px 3px; /* Reduced padding */
     border-radius: 3px;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: text; 
+    font-size: 0.9em; /* Slightly smaller font for tab names */
 }
 
 .tab-button input.tab-char-name-input-edit {
@@ -607,30 +613,46 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 
 
     .io-section-content { flex-direction: column; }
-    .overview-simplified-display { 
-        /* flex-wrap: wrap; /* Removed to prioritize horizontal scroll */
-    }
+    /* .overview-simplified-display { 
+        flex-wrap: wrap; 
+    } */
     .simplified-char-info { flex-basis: auto; margin-right: 10px; }
-    .simplified-triggers-group { flex-grow: 1; min-width: 150px; margin:0; justify-content: flex-start;}
+    /* .simplified-triggers-group { flex-grow: 1; min-width: 150px; margin:0; justify-content: flex-start;} */
     .simplified-final-damage { flex-basis: auto; margin-left:auto;}
 }
 
 @media (max-width: 768px) {
-    :root { --overview-simplified-height: auto; } 
-    .overview-header { min-height: 45px; }
-    /* .overview-simplified-display {
-        flex-direction: column; 
-        align-items: flex-start; 
-        gap: 5px; 
-    } */ /* Reverted to allow horizontal scroll even on smaller screens */
-    .simplified-char-info { flex-direction: row; gap: 10px; align-items: center; /* width: 100%; */ justify-content: flex-start; }
-    .simplified-final-damage { margin-left: auto; margin-top: 0; }
-    .simplified-triggers-group { /* width:100%; */ margin-top: 0; gap: 3px 8px; justify-content: flex-start; /* flex-wrap:wrap; */ }
+    /* :root { --overview-simplified-height: auto; } /* Consider if simplified header should be dynamic */
+    .overview-panel {
+        max-height: 85vh; /* Reduce max height a bit more for smaller screens */
+    }
+    .overview-header { 
+        min-height: 45px; 
+        /* If overview-simplified-height is auto, tabs top position needs JS update or a fixed fallback */
+    }
+    .character-tabs { 
+        /* Assuming var(--overview-simplified-height) is fixed; if not, this needs adjustment */
+        top: var(--overview-simplified-height, 50px); 
+    } 
+    .tab-button { 
+        min-width: 70px; /* Further reduce for smaller screens */
+        padding: 8px 2px;
+    }
+    .tab-char-name-display { font-size: 0.8em; }
+
+
+    .simplified-char-info { flex-direction: row; gap: 5px; align-items: center; justify-content: flex-start; }
+    .simplified-char-name { max-width: 100px; font-size: 0.95em; }
+    .simplified-triggers-group { margin: 0 2px; gap: 2px;}
+    .simplified-triggers-group .checkbox-label, .simplified-triggers-group .select-label { font-size: 0.7em; padding: 1px;}
+    .simplified-triggers-group .checkbox-label input[type="checkbox"] { transform: scale(0.6); margin-right: 0;}
+    .simplified-triggers-group .charge-value-select-simplified { font-size: 0.7em; max-width: 45px; padding: 0;}
+    .simplified-final-damage { font-size: 0.95em;}
+
 
     .main-container { padding: 10px; }
     .card, .character-panel { padding: 15px; }
-    .character-tabs { top: 60px;  } /* Adjust if simplified header height varies significantly */
-    .tab-button { min-width: 80px; } /* Further reduce for very small screens */
+    
     .tab-char-name-display, .tab-button input.tab-char-name-input-edit { font-size: 0.85em; padding: 8px 3px;}
 
     .base-stats-grid { grid-template-columns: 1fr; }
@@ -664,8 +686,9 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     h3 { font-size: 1.1em; }
     h4 { font-size: 1.05em; }
     h5 { font-size: 1em; }
-    .simplified-triggers-group .checkbox-label { white-space: normal; }
+    .simplified-triggers-group .checkbox-label { white-space: normal; } /* Allow wrapping for smallest */
     .overview-toggle-btn { padding: 4px 6px; font-size: 1em; }
     .simplified-char-info { flex-direction: column; align-items: flex-start; }
     .simplified-final-damage { margin-left: 0; }
+    .tab-button { min-width: 60px; } /* Smallest min-width for tabs */
 }
