@@ -1,7 +1,6 @@
 // js/main.js
 // (Keep everything else the same as the previous complete version)
-// Only showing the modified handleGlobalNonPanelInput and populateSimplifiedTriggers
-// AND setupStickyTabsObserver and updateOverviewPanelHeightVar (previously updateStickyTabsPosition)
+// Only showing modified/new functions for responsive showcase height and sticky tab logic
 
 function populateSimplifiedTriggers() {
     const container = document.getElementById('simplifiedTriggersContainer');
@@ -117,7 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
         populateSimplifiedTriggers(); 
         setupBackgroundControls(); 
         setupPanelOpacityControls(); 
-        setupStickyTabsObserver(); 
+        setupResponsiveShowcaseHeight(); // New function for responsive height
+        setupStickyTabsObserver(); // Keeps its original role for overview panel height var
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -154,6 +154,7 @@ function setupGlobalUITogglesAndInteractions() {
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
             updateOverviewPanelHeightVar(); 
+            updateShowcaseHeight(); // Recalculate showcase height if overview panel changes size
         });
     }
 }
@@ -247,19 +248,63 @@ function updateOverviewPanelHeightVar() {
     }
 }
 
+// New function to update --dynamic-showcase-height
+function updateShowcaseHeight() {
+    const mainContainer = document.querySelector('.main-container');
+    const showcaseArea = document.getElementById('backgroundShowcaseArea');
+    if (!mainContainer || !showcaseArea) return;
+
+    const containerWidth = mainContainer.offsetWidth;
+    let newHeight;
+
+    if (window.innerWidth <= 768) { // Example breakpoint for "narrow" (mobile)
+        newHeight = containerWidth * (2 / 3);
+    } else { // Wider screens
+        newHeight = containerWidth * (1 / 3);
+    }
+    newHeight = Math.max(150, Math.min(newHeight, 450)); // Min 150px, Max 450px
+    
+    document.documentElement.style.setProperty('--dynamic-showcase-height', `${newHeight}px`);
+    showcaseArea.style.height = `${newHeight}px`; // Also directly set, CSS var is for padding
+}
+
+// Setup listener for responsive showcase height
+function setupResponsiveShowcaseHeight() {
+    updateShowcaseHeight(); // Initial call
+    window.addEventListener('resize', updateShowcaseHeight);
+
+    // Also observe main container for width changes if it's not always full window width
+    const mainContainer = document.querySelector('.main-container');
+    if (mainContainer) {
+        const resizeObserver = new ResizeObserver(updateShowcaseHeight);
+        resizeObserver.observe(mainContainer);
+    }
+}
+
+
 function setupStickyTabsObserver() { 
     const overviewPanel = document.getElementById('overviewPanel');
     if (!overviewPanel) return;
 
     updateOverviewPanelHeightVar(); 
 
+    // This observer is for the overview panel's height, which affects sticky tab positioning
     const observer = new ResizeObserver(entries => {
         for (let entry of entries) {
-            updateOverviewPanelHeightVar(); 
+            updateOverviewPanelHeightVar();
+            // When overview panel resizes, it might affect where tabs should stick
+            // No, tabs are sticky relative to .main-scrollable-content now.
+            // But showcase area height might need update if overview changes.
+            updateShowcaseHeight(); 
         }
     });
-
     observer.observe(overviewPanel);
+
+    // Note: The logic for Character Tabs becoming sticky and Character Panels fading
+    // is now primarily handled by CSS (position: sticky for tabs, mask-image for panels).
+    // If more complex JS-driven observation is needed for the fade based on scroll,
+    // an IntersectionObserver on character-panels-container would be added here.
+    // For now, relying on CSS mask which is simpler if it works across browsers.
 }
 
 
