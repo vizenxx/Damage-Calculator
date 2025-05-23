@@ -1,4 +1,5 @@
 // js/main.js
+// (Full file including previous correct functions)
 document.addEventListener('DOMContentLoaded', () => {
     try {
         initApplication();
@@ -85,7 +86,8 @@ function setupGlobalUITogglesAndInteractions() {
             const isSimplified = overviewPanel.classList.toggle('simplified');
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
-            updateStickyTabsPosition(); 
+            // Call after a short delay to allow layout reflow from class toggle
+            requestAnimationFrame(updateStickyTabsPosition); 
         });
     }
 }
@@ -174,17 +176,19 @@ function setupPanelOpacityControls() {
 function updateStickyTabsPosition() {
     const overviewPanel = document.getElementById('overviewPanel');
     const showcaseArea = document.getElementById('backgroundShowcaseArea');
-    const characterTabs = document.getElementById('characterTabs');
+    const tabsAndPanelsContainer = document.getElementById('tabsAndPanelsContainer'); // Target the new sticky container
 
-    if (overviewPanel && showcaseArea && characterTabs) {
+    if (overviewPanel && showcaseArea && tabsAndPanelsContainer) {
         const overviewHeight = overviewPanel.offsetHeight;
         const showcaseHeightValue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--background-showcase-height').replace('px', '')) || 350;
         
-        const tabsTopPosition = overviewHeight + showcaseHeightValue;
-        characterTabs.style.top = `${tabsTopPosition}px`;
+        const stickyTopPosition = overviewHeight + showcaseHeightValue;
+        tabsAndPanelsContainer.style.top = `${stickyTopPosition}px`;
         
-        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`); 
-        // document.documentElement.style.setProperty('--overview-plus-showcase-height', `${tabsTopPosition}px`); // Not currently used by CSS but could be
+        // This CSS variable can be used by CSS if needed, e.g. for the character-tabs's own top if it were also sticky
+        document.documentElement.style.setProperty('--tabs-and-panels-sticky-top', `${stickyTopPosition}px`);
+        // Update the individual overview panel height var as well
+        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
     }
 }
 
