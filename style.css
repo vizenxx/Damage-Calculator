@@ -1,4 +1,4 @@
-/* style.css - Corrected Showcase Area Fade Effect */
+/* style.css - Sticky and Fade Refinements */
 :root {
     --primary-accent-color: #00f0ff; 
     --primary-accent-hover-color: #00c0cc;
@@ -25,8 +25,10 @@
     --border-radius: 6px;
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     
-    --overview-panel-height: 50px; 
+    --overview-panel-height: 50px; /* JS will update this based on actual overview panel height */
     --background-showcase-height: 350px; 
+    --tabs-and-panels-sticky-top: calc(var(--overview-panel-height) + var(--background-showcase-height)); /* New var for combined height */
+
 
     --panel-bg-primary-alpha: 1; 
     --panel-bg-secondary-alpha: 1; 
@@ -63,7 +65,6 @@ body {
     pointer-events: none; 
 }
 
-/* This gradient is for the BACKGROUND IMAGE itself, making it fade into the page BG at the bottom */
 .background-layer.has-image::after { 
     content: '';
     position: absolute;
@@ -90,6 +91,83 @@ body {
     gap: 0; 
     position: relative; 
     z-index: 1;
+}
+
+h3 { 
+    margin-bottom: 15px; 
+    font-size: 1.3em; 
+    color: var(--primary-accent-color); 
+    word-break: break-word;
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
+    text-shadow: var(--text-shadow-accent);
+}
+h4 { 
+    margin-bottom: 10px; 
+    font-size: 1.2em; 
+    color: var(--light-text-primary); 
+    word-break: break-word; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color-dark);
+    padding-bottom: 8px;
+}
+.settings-footer h4 { 
+    font-size: 1.1em;
+    color: var(--primary-accent-color);
+    text-shadow: none;
+    border-bottom: 1px solid var(--border-color-accent);
+    margin-top: 0;
+}
+.panel-transparency-settings h4 {
+     margin-top: 20px; 
+}
+
+
+h4 .intermediate-result-display { 
+    color: var(--primary-accent-color);
+    font-weight: bold;
+    font-size: 0.9em;
+}
+h5 { 
+    font-size: 1.1em; 
+    color: var(--primary-accent-color); 
+    margin-bottom: 8px; 
+    font-weight: 500;
+    word-break: break-word; 
+    display: flex; 
+    align-items: center; 
+    gap: 5px;
+}
+
+.card {
+    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha));
+    padding: 25px; 
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow-dark);
+    border: 1px solid var(--border-color-dark);
+    transition: background-color 0.2s ease-out; 
+}
+
+.input-with-suffix-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.input-with-suffix-wrapper input[type="number"] {
+    flex-grow: 1;
+    padding-right: 30px; 
+}
+.input-with-suffix-wrapper .input-suffix-internal {
+    position: absolute;
+    right: 10px; 
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-accent-color); 
+    pointer-events: none;
+    font-size: 0.9em;
+    font-weight: bold;
 }
 
 .overview-panel { 
@@ -255,14 +333,11 @@ body {
     display: none !important;
 }
 
-/* Showcase Area for Background Image Display and Panel Fade Effect */
 .background-showcase-area {
     height: var(--background-showcase-height);
     position: relative; 
-    /* This area itself does not need a background color, it shows the main page/image background */
-    /* It needs a z-index to ensure its pseudo-element is correctly layered */
-    z-index: 999; /* Above main page content but below sticky overview if they could overlap */
-    pointer-events: none; /* Critical: allow interaction with elements scrolling under it */
+    z-index: 999; 
+    pointer-events: none; 
 }
 
 .background-showcase-area::before { 
@@ -272,135 +347,37 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    /* Gradient: Opaque (matching page bg) at TOP, transparent at BOTTOM of this area */
-    /* This makes content scrolling UP from below fade OUT as it reaches the top of this showcase area */
     background: linear-gradient(to bottom, 
-        rgba(var(--dark-bg-primary-rgb), 1) 0%,       /* Opaque with primary BG color at top */
-        rgba(var(--dark-bg-primary-rgb), 0.95) 10%,   /* Slightly less opaque */
-        rgba(var(--dark-bg-primary-rgb), 0.7) 30%,    /* Fading */
-        rgba(var(--dark-bg-primary-rgb), 0) 100%      /* Fully transparent at bottom */
+        rgba(var(--dark-bg-primary-rgb), 1) 0%,       
+        rgba(var(--dark-bg-primary-rgb), 0.95) 10%,   
+        rgba(var(--dark-bg-primary-rgb), 0.7) 30%,    
+        rgba(var(--dark-bg-primary-rgb), 0) 100%      
     );
-    /* pointer-events: none; /* Already on parent, but good practice */
-    z-index: 1; /* Ensure this gradient is on top within the showcase area */
+    z-index: 1; 
 }
 
 
 .tabs-and-panels-container {
-    position: relative; 
-    z-index: 10; /* Below the showcase area's gradient and overview panel */
+    position: sticky; 
+    top: var(--tabs-and-panels-sticky-top); 
+    z-index: 990; 
+    /* This container groups tabs and panels for unified sticking */
 }
 
 .character-tabs {
     display: flex;
     border-bottom: 2px solid var(--primary-accent-color);
-    position: sticky;
-    /* top will be set by JS: overviewPanel.height + showcaseArea.height */
-    /* e.g., top: calc(var(--overview-panel-height) + var(--background-showcase-height)); */
+    /* Not sticky itself; its parent .tabs-and-panels-container is */
     background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
-    z-index: 998; /* Below showcase gradient, above character panels if they were to overlap */
+    z-index: 2; /* Higher than .character-panels-container within this sticky block */
     padding: 0;
     width: 100%;
-    transition: top 0.1s ease-out, background-color 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
     overflow-x: auto; 
     -webkit-overflow-scrolling: touch; 
     scrollbar-width: thin; 
     scrollbar-color: var(--primary-accent-color) var(--dark-bg-secondary); 
 }
-
-
-/* ... (Rest of your CSS - all the rules from the previous complete CSS file for h3, h4, .card, inputs, buttons, tabs, panels, specific items, media queries etc. should follow here. I am only showing the changed/new parts for brevity.) ... */
-/* Ensure ALL previous styles are maintained below this point, or integrate these changes into your full existing CSS */
-
-/* PASTE THE REST OF YOUR COMPLETE style.css (from previous answer) HERE, STARTING FROM: */
-/* .overview-grid { ... } OR WHEREVER THE NEXT SECTION BEGINS */
-/* Ensure all the panel transparency styles using rgba() and CSS variables are present */
-/* Ensure all media queries are present */
-
-/* For example, starting from here, paste the previous full CSS: */
-
-h3 { 
-    margin-bottom: 15px; 
-    font-size: 1.3em; 
-    color: var(--primary-accent-color); 
-    word-break: break-word;
-    text-transform: uppercase; 
-    letter-spacing: 0.5px;
-    text-shadow: var(--text-shadow-accent);
-}
-h4 { 
-    margin-bottom: 10px; 
-    font-size: 1.2em; 
-    color: var(--light-text-primary); 
-    word-break: break-word; 
-    display: flex; 
-    align-items: center; 
-    gap: 8px;
-    border-bottom: 1px solid var(--border-color-dark);
-    padding-bottom: 8px;
-}
-.settings-footer h4 { 
-    font-size: 1.1em;
-    color: var(--primary-accent-color);
-    text-shadow: none;
-    border-bottom: 1px solid var(--border-color-accent);
-    margin-top: 0;
-}
-.panel-transparency-settings h4 {
-     margin-top: 20px; 
-}
-
-
-h4 .intermediate-result-display { 
-    color: var(--primary-accent-color);
-    font-weight: bold;
-    font-size: 0.9em;
-}
-h5 { 
-    font-size: 1.1em; 
-    color: var(--primary-accent-color); 
-    margin-bottom: 8px; 
-    font-weight: 500;
-    word-break: break-word; 
-    display: flex; 
-    align-items: center; 
-    gap: 5px;
-}
-
-.card {
-    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha));
-    padding: 25px; 
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow-dark);
-    border: 1px solid var(--border-color-dark);
-    transition: background-color 0.2s ease-out; 
-}
-
-.input-with-suffix-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-.input-with-suffix-wrapper input[type="number"] {
-    flex-grow: 1;
-    padding-right: 30px; 
-}
-.input-with-suffix-wrapper .input-suffix-internal {
-    position: absolute;
-    right: 10px; 
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--primary-accent-color); 
-    pointer-events: none;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-/* .overview-panel is already styled */
-/* .overview-header is already styled */
-/* .overview-simplified-display is already styled */
-/* .simplified-char-info etc. already styled */
-/* .overview-toggle-btn already styled */
-/* .overview-content already styled */
 
 
 .overview-grid {
@@ -644,9 +621,10 @@ h5 {
     padding: 25px; 
     background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
     border: 1px solid var(--primary-accent-color); 
-    border-top: none;
+    border-top: none; 
     border-radius: 0 0 var(--border-radius) var(--border-radius);
     transition: background-color 0.2s ease-out;
+    /* z-index: 1; /* Default stacking within its parent */
 }
 .character-panel.active { display: block; }
 
