@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupGlobalUITogglesAndInteractions();
         setupSimplifiedExportImportListeners();
         populateSimplifiedTriggers(); 
+        setupBackgroundControls(); // Initialize background controls
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -86,6 +87,53 @@ function setupGlobalUITogglesAndInteractions() {
         });
     }
 }
+
+function setupBackgroundControls() {
+    const backgroundImageInput = document.getElementById('backgroundImageInput');
+    const backgroundOpacitySlider = document.getElementById('backgroundOpacitySlider');
+    const backgroundOpacityValue = document.getElementById('backgroundOpacityValue');
+    const backgroundLayer = document.getElementById('backgroundLayer');
+    const resetButton = document.getElementById('resetBackgroundButton');
+
+    let currentObjectURL = null; 
+
+    if (backgroundImageInput && backgroundOpacitySlider && backgroundOpacityValue && backgroundLayer && resetButton) {
+        backgroundImageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (currentObjectURL) {
+                    URL.revokeObjectURL(currentObjectURL); 
+                }
+                currentObjectURL = URL.createObjectURL(file);
+                
+                // No need to use new Image() to get dimensions if we are strictly aligning to width.
+                backgroundLayer.style.backgroundImage = `url('${currentObjectURL}')`;
+                backgroundLayer.style.backgroundSize = '100% auto'; // 对齐宽度，高度自动
+                backgroundLayer.style.backgroundPosition = 'center top'; // Show top of image if taller
+            }
+        });
+
+        backgroundOpacitySlider.addEventListener('input', function(event) {
+            const opacity = event.target.value / 100;
+            backgroundLayer.style.opacity = opacity;
+            backgroundOpacityValue.textContent = event.target.value;
+        });
+
+        resetButton.addEventListener('click', function() {
+            if (currentObjectURL) {
+                URL.revokeObjectURL(currentObjectURL);
+                currentObjectURL = null;
+            }
+            backgroundLayer.style.backgroundImage = 'none';
+            // backgroundLayer.style.backgroundSize = 'cover'; // Reset, though 'none' makes it irrelevant
+            backgroundOpacitySlider.value = 100;
+            backgroundLayer.style.opacity = 1;
+            backgroundOpacityValue.textContent = 100;
+            backgroundImageInput.value = null; 
+        });
+    }
+}
+
 
 function initApplication() {
     const enemyDefenseEl = document.getElementById('enemyDefenseGlobal');
@@ -215,7 +263,7 @@ function handleCharacterPanelInput(event) {
 
 function handleGlobalNonPanelInput(event) {
     const target = event.target;
-    if (target.closest('.character-panel')) return; 
+    if (target.closest('.character-panel') || target.closest('.background-settings-footer')) return; 
 
     let needsRecalc = false;
     const activeCharData = characters[activeCharacterIndex];
