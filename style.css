@@ -1,22 +1,29 @@
-/* style.css - Intended Complete Version */
+/* style.css - Dark Theme Overhaul */
 :root {
-    --primary-color: #007bff;
-    --primary-hover-color: #0056b3;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --light-bg-color: #f8f9fa;
-    --dark-text-color: #212529;
-    --medium-text-color: #495057;
-    --light-text-color: #6c757d;
-    --border-color: #dee2e6;
-    --card-bg-color: #ffffff;
-    --card-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    --primary-accent-color: #00f0ff; /* Cyan accent from example */
+    --primary-accent-hover-color: #00c0cc;
+    --secondary-accent-color: #00aaff; /* A slightly different blue/cyan for variation if needed */
+    
+    --dark-bg-primary: #0f1014; /* Very dark background */
+    --dark-bg-secondary: #1a1c23; /* Slightly lighter for cards/panels */
+    --dark-bg-tertiary: #252830; /* For inputs or highlighted sections */
+
+    --light-text-primary: #e0e0e0; /* Main light text */
+    --light-text-secondary: #a0a0a0; /* Subdued text */
+    --light-text-disabled: #606060;
+
+    --border-color-dark: #30333d; /* Borders for dark theme */
+    --border-color-accent: var(--primary-accent-color);
+
+    --card-shadow-dark: 0 4px 15px rgba(0, 240, 255, 0.1); /* Subtle cyan glow shadow */
+    --text-shadow-accent: 0 0 8px rgba(0, 240, 255, 0.7); /* Glow for text */
+
     --border-radius: 6px;
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    
     --overview-simplified-height: 50px; 
     --tabs-height: 42px;
-    --header-height: 0px; /* Placeholder for dynamic header height if needed for calculations */
+    --header-height: 0px;
 }
 
 html { box-sizing: border-box; }
@@ -26,8 +33,8 @@ body {
     font-family: var(--font-family);
     line-height: 1.6;
     margin: 0;
-    background-color: #eef2f5;
-    color: var(--dark-text-color);
+    background-color: var(--dark-bg-primary);
+    color: var(--light-text-primary);
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -42,16 +49,48 @@ body {
     gap: 20px;
 }
 
-h3 { margin-bottom: 15px; font-size: 1.2em; color: var(--primary-color); word-break: break-word;}
-h4 { margin-bottom: 10px; font-size: 1.15em; color: #34495e; word-break: break-word; display: flex; align-items: center; gap: 5px;}
-h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-weight: 500;word-break: break-word; display: flex; align-items: center; gap: 5px;}
+h3 { 
+    margin-bottom: 15px; 
+    font-size: 1.3em; /* Slightly larger */
+    color: var(--primary-accent-color); 
+    word-break: break-word;
+    text-transform: uppercase; /* Match example */
+    letter-spacing: 0.5px;
+    text-shadow: var(--text-shadow-accent);
+}
+h4 { 
+    margin-bottom: 10px; 
+    font-size: 1.2em; 
+    color: var(--light-text-primary); 
+    word-break: break-word; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color-dark);
+    padding-bottom: 8px;
+}
+h4 .intermediate-result-display { /* Make IR display more prominent */
+    color: var(--primary-accent-color);
+    font-weight: bold;
+    font-size: 0.9em;
+}
+h5 { 
+    font-size: 1.1em; 
+    color: var(--primary-accent-color); 
+    margin-bottom: 8px; 
+    font-weight: 500;
+    word-break: break-word; 
+    display: flex; 
+    align-items: center; 
+    gap: 5px;
+}
 
 .card {
-    background: var(--card-bg-color);
-    padding: 20px;
+    background: var(--dark-bg-secondary);
+    padding: 25px; /* Increased padding */
     border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow-dark);
+    border: 1px solid var(--border-color-dark);
 }
 
 .input-with-suffix-wrapper {
@@ -61,50 +100,53 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 }
 .input-with-suffix-wrapper input[type="number"] {
     flex-grow: 1;
-    padding-right: 25px; 
+    padding-right: 30px; /* More space for suffix */
 }
 .input-with-suffix-wrapper .input-suffix-internal {
     position: absolute;
-    right: 8px; 
+    right: 10px; 
     top: 50%;
     transform: translateY(-50%);
-    color: var(--medium-text-color);
+    color: var(--primary-accent-color); /* Accent color for suffix */
     pointer-events: none;
     font-size: 0.9em;
+    font-weight: bold;
 }
-
 
 .overview-panel {
     position: sticky;
     top: 0;
     z-index: 1002;
     margin-bottom: 20px;
-    /* Max height for the entire panel to allow its content to scroll */
-    max-height: 95vh; /* Example: 95% of viewport height */
-    display: flex; /* Needed for children to correctly size and scroll */
+    max-height: 95vh; 
+    display: flex; 
     flex-direction: column;
+    background: var(--dark-bg-secondary); /* Apply card background */
+    border: 1px solid var(--border-color-dark);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow-dark);
 }
 .overview-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     min-height: var(--overview-simplified-height);
-    padding: 10px;
+    padding: 10px 15px; /* Adjusted padding */
     position: relative; 
-    flex-shrink: 0; /* Header should not shrink */
+    flex-shrink: 0; 
+    border-bottom: 1px solid var(--border-color-dark); /* Separator */
 }
 
 .overview-simplified-display {
     flex-grow: 1;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px; /* Increased gap */
     font-size: 1em;
     width: 100%; 
-    /* Removed overflow-x: auto from here; scrolling is for the main content area now */
-    overflow-x: hidden; /* Prevent horizontal scroll on simplified if not intended */
+    overflow-x: hidden; 
     overflow-y: hidden; 
-    padding-bottom: 0; /* No extra padding needed if not scrolling itself */
+    padding-bottom: 0; 
 }
 .overview-panel.simplified .overview-simplified-display { display: flex; }
 .overview-panel:not(.simplified) .overview-simplified-display { display: none; }
@@ -118,63 +160,88 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     white-space: nowrap; 
 }
 .simplified-char-name {
-    color: var(--primary-color);
+    color: var(--primary-accent-color);
     font-weight: 600;
+    text-shadow: var(--text-shadow-accent);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 120px; /* Slightly reduced max-width */
-    font-size: 1.05em;
+    max-width: 150px; 
+    font-size: 1.1em; /* Slightly larger */
 }
+.simplified-char-name span { /* The actual name part */
+    color: var(--light-text-primary);
+    text-shadow: none;
+}
+
 
 .simplified-triggers-group {
     display: flex;
-    gap: 3px; /* Reduced gap */
+    gap: 5px; 
     align-items: center;
-    flex-shrink: 1; /* Allow shrinking if necessary, or set to 0 for definite overflow */
-    min-width: 0; /* Allow shrinking below content size */
-    margin: 0 3px; 
+    flex-shrink: 1; 
+    min-width: 0; 
+    margin: 0 5px; 
     white-space: nowrap; 
-    overflow-x: auto; /* IF simplified triggers themselves need to scroll horizontally */
-    scrollbar-width: none; /* Hide scrollbar for this small element if it appears */
-    -ms-overflow-style: none; /* IE and Edge */
+    overflow-x: auto; 
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
 }
 .simplified-triggers-group::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Webkit */
+    display: none; 
 }
 .simplified-triggers-group .checkbox-label,
 .simplified-triggers-group .select-label {
-    font-size: 0.75em; /* Slightly smaller font for triggers */
+    font-size: 0.85em; 
+    color: var(--light-text-secondary);
     margin-bottom: 0;
     white-space: nowrap;
-    padding: 1px 2px; /* Reduced padding */
+    padding: 2px 4px; 
     border-radius: 3px;
     display: flex;
     align-items: center;
     flex-shrink: 0; 
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+.simplified-triggers-group .checkbox-label:hover,
+.simplified-triggers-group .select-label:hover {
+    color: var(--primary-accent-color);
+    border-color: var(--primary-accent-color);
 }
 .simplified-triggers-group .checkbox-label input[type="checkbox"] {
-    margin-right: 1px;
-    transform: scale(0.7);
+    margin-right: 3px;
+    transform: scale(0.9);
+    accent-color: var(--primary-accent-color);
 }
 .simplified-triggers-group .charge-value-select-simplified {
-    font-size: 0.8em; 
-    padding: 0px 1px;
-    max-width: 50px; 
+    font-size: 0.85em; 
+    padding: 1px 2px;
+    background-color: var(--dark-bg-tertiary);
+    color: var(--light-text-primary);
+    border: 1px solid var(--border-color-dark);
+    border-radius: 3px;
+    max-width: 55px; 
 }
 
 .simplified-final-damage {
-    color: var(--danger-color);
-    font-weight: 600;
+    color: var(--primary-accent-color);
+    font-weight: bold; /* Bolder */
+    text-shadow: var(--text-shadow-accent);
     white-space: nowrap; 
-    font-size: 1.0em; /* Slightly smaller */
+    font-size: 1.1em; 
     margin-left: auto; 
     flex-shrink: 0; 
 }
+.simplified-final-damage span {
+    color: var(--light-text-primary); /* Actual number color */
+    text-shadow: none;
+}
 
 .overview-toggle-btn {
-    background: none;
-    border: 1px solid var(--border-color);
+    background: transparent;
+    border: 1px solid var(--primary-accent-color);
+    color: var(--primary-accent-color);
     border-radius: var(--border-radius);
     padding: 5px 8px;
     font-size: 1.1em;
@@ -182,66 +249,97 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     line-height: 1;
     flex-shrink: 0; 
     margin-left: 10px; 
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
-
+.overview-toggle-btn:hover {
+    background-color: var(--primary-accent-color);
+    color: var(--dark-bg-secondary);
+    text-shadow: none;
+}
 
 .overview-content {
-    /* overflow: hidden; /* Managed by transition */
     transition: opacity 0.3s ease-out, max-height 0.4s ease-out, margin-top 0.3s ease-out, padding-top 0.3s ease-out, padding-bottom 0.3s ease-out;
-    /* max-height: 1200px; Let it be determined by parent's max-height */
     opacity: 1;
-    padding-top: 0;
-    flex-grow: 1; /* Allow content to take available vertical space */
-    overflow-y: auto; /* THIS IS THE KEY FOR VERTICAL SCROLLING OF EXPANDED CONTENT */
-    overflow-x: hidden; /* Prevent horizontal scroll on main content area */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    padding: 20px; /* Add padding to content area */
+    flex-grow: 1; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    -webkit-overflow-scrolling: touch; 
 }
 .overview-panel.simplified .overview-content {
-    max-height: 0 !important; /* Ensure it collapses */
-    opacity: 0; padding-top: 0; padding-bottom: 0; margin-top: 0;
+    max-height: 0 !important; 
+    opacity: 0; padding: 0; margin-top: 0;
     visibility: hidden;
-    overflow-y: hidden; /* Hide scrollbar when simplified */
+    overflow-y: hidden; 
 }
 .overview-panel.simplified .formula-trace-toggle-container,
 .overview-panel.simplified .global-trace {
     display: none !important;
 }
 
-/* Removed scrollbar styling for .overview-simplified-display as it should not scroll primarily */
 
 .overview-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px; align-items: start;
-    margin-top: 15px;
+    /* margin-top: 15px; /* Removed, padding on overview-content handles this */
 }
 .overview-section {
-    padding: 15px; border: 1px solid #eee; border-radius: var(--border-radius);
-    background-color: var(--light-bg-color);
+    padding: 20px; 
+    border: 1px solid var(--border-color-dark); 
+    border-radius: var(--border-radius);
+    background-color: var(--dark-bg-tertiary); /* Slightly different bg for sections */
 }
-.overview-section h3 { margin-top:0; border-bottom: 1px solid #ddd; padding-bottom: 8px;}
+.overview-section h3 { 
+    margin-top:0; 
+    border-bottom: 1px solid var(--border-color-accent); 
+    padding-bottom: 10px;
+    font-size: 1.1em;
+    text-shadow: none; /* Tone down h3 shadow within sections if too much */
+}
 
 .input-group {
     position: relative; display: flex; flex-direction: column;
-    margin-bottom: 12px; gap: 5px;
+    margin-bottom: 15px; /* Increased gap */
+    gap: 8px;
 }
 .input-group label:not(.checkbox-label):not(.checkbox-top-right) {
-    font-weight: 500; font-size: 0.95em; color: var(--medium-text-color);
+    font-weight: 500; 
+    font-size: 0.95em; 
+    color: var(--light-text-secondary);
     display: block;
 }
 .input-group input[type="number"], .input-group select {
-    padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%;
+    padding: 10px 12px; /* Increased padding */
+    border: 1px solid var(--border-color-dark); 
+    border-radius: 4px; 
+    width: 100%;
     font-size: 1em;
+    background-color: var(--dark-bg-primary); /* Darker input background */
+    color: var(--light-text-primary);
+    transition: border-color 0.2s ease;
 }
 .input-group input[type="number"]:focus, .input-group select:focus {
-    outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0,123,255,.2);
+    outline: none; 
+    border-color: var(--primary-accent-color); 
+    box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.3);
+}
+.input-group select option {
+    background-color: var(--dark-bg-secondary);
+    color: var(--light-text-primary);
 }
 
-.checkbox-label { display: flex; align-items: center; font-weight: normal; cursor: pointer; }
-.checkbox-label input[type="checkbox"] { margin-right: 6px; accent-color: var(--primary-color); }
+
+.checkbox-label { display: flex; align-items: center; font-weight: normal; cursor: pointer; color: var(--light-text-secondary); }
+.checkbox-label:hover { color: var(--primary-accent-color); }
+.checkbox-label input[type="checkbox"] { 
+    margin-right: 8px; /* More space */
+    accent-color: var(--primary-accent-color); 
+    transform: scale(1.1); /* Slightly larger checkboxes */
+}
 
 .checkbox-top-right {
-    position: absolute; top: 0; right: 0; font-size: 0.9em;
-    display: flex; align-items: center; color: var(--medium-text-color);
+    position: absolute; top: 5px; right: 5px; font-size: 0.9em;
+    display: flex; align-items: center; color: var(--light-text-secondary);
     padding: 3px 0;
     line-height: 1.2;
     height: auto;
@@ -249,79 +347,97 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 .checkbox-top-right input[type="checkbox"] { margin-right: 4px; transform: scale(0.9); }
 
 .skill-display-group-overview {
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
-.skill-display-group-overview label {
-     font-weight: 500; font-size: 0.95em; color: var(--medium-text-color); display: block; margin-bottom: 5px;
+.skill-display-group-overview > label { /* The main label "武器/技能倍率" */
+     font-weight: 500; font-size: 1em; color: var(--light-text-primary); display: block; margin-bottom: 8px;
 }
 .skill-display-value-wrapper {
     display: flex; align-items: center; gap: 8px;
-    padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 4px; background-color: #e9ecef;
+    padding: 10px 12px; border: 1px solid var(--border-color-dark); border-radius: 4px; background-color: var(--dark-bg-primary);
     position: relative; 
+    color: var(--light-text-primary);
 }
 #quickViewSkillMultiplier_value_display {
     font-weight: bold;
+    color: var(--primary-accent-color);
     flex-grow: 1; 
 }
 .skill-display-value-wrapper .skill-display-suffix {
-    color: var(--medium-text-color);
+    color: var(--primary-accent-color);
+    font-weight: bold;
     font-size: 0.9em;
     margin-left: 4px; 
 }
 .skill-display-group-overview .checkbox-label {
     margin-left: auto; 
+    color: var(--light-text-primary);
 }
 
 
 .core-choice-group-overview, .charge-choice-group-overview {
     display: flex; flex-direction: row; align-items: center; gap: 10px;
-    margin-top: 10px; flex-wrap: wrap;
+    margin-top: 15px; flex-wrap: wrap;
 }
-.core-choice-group-overview .checkbox-label, .charge-choice-group-overview .checkbox-label { margin-bottom: 0; }
-.charge-choice-group-overview label[for="quickViewChargeUpBaseValue"] { margin-right: 5px; }
+.core-choice-group-overview .checkbox-label, .charge-choice-group-overview .checkbox-label { margin-bottom: 0; color: var(--light-text-primary); }
 .core-choice-group-overview select, .charge-choice-group-overview select {
-    width: auto; flex-grow: 1; min-width: 80px; margin-bottom: 0;
+    width: auto; flex-grow: 1; min-width: 90px; margin-bottom: 0;
+    background-color: var(--dark-bg-primary);
+    color: var(--light-text-primary);
+    border: 1px solid var(--border-color-dark);
 }
 
 .final-damage-display-container {
     display: flex; align-items: center; justify-content: space-between;
-    font-size: 1.2em; font-weight: bold; padding: 8px 12px;
-    background-color: #e9ecef; border-radius: var(--border-radius); margin-bottom: 15px;
+    font-size: 1.3em; /* Larger */
+    font-weight: bold; 
+    padding: 12px 15px;
+    background-color: var(--dark-bg-tertiary); 
+    border: 1px solid var(--primary-accent-color);
+    border-radius: var(--border-radius); 
+    margin-bottom: 20px;
+    color: var(--light-text-primary);
 }
-.final-damage-output-display.overview-damage { color: var(--danger-color); }
-.core-conditional-triggers { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.final-damage-output-display.overview-damage { 
+    color: var(--primary-accent-color); 
+    text-shadow: var(--text-shadow-accent);
+}
+.core-conditional-triggers { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+.core-conditional-triggers .checkbox-label { font-size: 1em; color: var(--light-text-primary); }
 
-.formula-trace-toggle-container { margin-top: 15px; padding-top:15px; border-top: 1px solid var(--border-color); }
+
+.formula-trace-toggle-container { margin-top: 20px; padding-top:20px; border-top: 1px solid var(--border-color-dark); }
+.formula-trace-toggle-container .checkbox-label { font-size: 1em; color: var(--light-text-primary); }
 
 .formula-trace-area {
     display: none;
-    background-color: #fdfdfd;
-    border: 1px solid var(--border-color);
+    background-color: var(--dark-bg-primary);
+    border: 1px solid var(--border-color-dark);
     border-radius: var(--border-radius);
     padding: 15px;
     margin-top: 15px;
-    max-height: 300px; /* This area can scroll independently if very long */
+    max-height: 300px; 
     overflow-y: auto;
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
     font-size: 0.9em;
-    line-height: 1.5;
+    line-height: 1.6; /* Increased line height for readability */
     word-break: break-all;
     white-space: pre-wrap;
+    color: var(--light-text-secondary);
 }
 .formula-trace-area.visible { display: block; }
-.trace-step { margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px dotted #eee; }
+.trace-step { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dotted #333; }
 .trace-step:last-child { border-bottom: none; margin-bottom: 0; }
-.trace-value { font-weight: bold; color: var(--primary-color); }
-.trace-comment { color: var(--secondary-color); font-style: italic; font-size: 0.9em; }
+.trace-value { font-weight: bold; color: var(--primary-accent-color); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); }
+.trace-comment { color: #888; font-style: italic; font-size: 0.9em; }
 
 .character-tabs {
     display: flex;
-    border-bottom: 2px solid var(--primary-color);
+    border-bottom: 2px solid var(--primary-accent-color);
     margin-bottom: -1px;
     position: sticky;
-    /* The top value should account for the height of the OVERVIEW HEADER, not the whole panel */
-    top: var(--overview-simplified-height); /* Adjust if simplified header height is dynamic */
-    background-color: #eef2f5;
+    top: var(--overview-simplified-height); 
+    background-color: var(--dark-bg-primary); /* Match body bg */
     z-index: 1000;
     padding: 0;
     width: 100%;
@@ -329,68 +445,63 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     overflow-x: auto; 
     -webkit-overflow-scrolling: touch; 
     scrollbar-width: thin; 
-    scrollbar-color: var(--primary-color) var(--light-bg-color); 
+    scrollbar-color: var(--primary-accent-color) var(--dark-bg-secondary); 
 }
 
-.character-tabs::-webkit-scrollbar {
-    height: 6px; 
-}
-.character-tabs::-webkit-scrollbar-track {
-    background: var(--light-bg-color);
-    border-radius: 3px;
-}
-.character-tabs::-webkit-scrollbar-thumb {
-    background-color: var(--primary-color);
-    border-radius: 3px;
-}
+.character-tabs::-webkit-scrollbar { height: 6px; }
+.character-tabs::-webkit-scrollbar-track { background: var(--dark-bg-secondary); border-radius: 3px; }
+.character-tabs::-webkit-scrollbar-thumb { background-color: var(--primary-accent-color); border-radius: 3px; }
 
 .tab-button {
-    flex-shrink: 0; /* Prevent tabs from shrinking */
-    /* flex-grow: 1; /* Allow to grow if few tabs, but min-width will take precedence */
-    /* flex-basis: 0; /* Distribute space based on flex-grow */
-    /* We need a defined basis or min-width for overflow to work correctly with many tabs */
-    min-width: 75px; /* Adjust this value based on NUM_CHARACTERS and desired tab appearance */
-    /* For 5 tabs, 20% width each would be ideal if no scroll, but for scroll, min-width is better */
-    /* Example: if container is 320px wide, 5 tabs * 75px = 375px -> scroll */
+    flex-shrink: 0; 
+    min-width: 80px; /* Adjusted for better fit */
     border: 1px solid transparent;
     border-bottom: none;
-    border-left-color: var(--border-color);
+    /* border-left-color: var(--border-color-dark); */ /* Removed for cleaner look between tabs */
     cursor: pointer;
-    background-color: var(--light-bg-color);
+    background-color: var(--dark-bg-secondary);
     text-align: center;
     font-weight: 500;
-    color: var(--medium-text-color);
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    color: var(--light-text-secondary);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 3px; /* Reduced horizontal padding for tabs */
+    padding: 12px 8px; /* Adjusted padding */
     position: relative;
     white-space: nowrap; 
 }
+.tab-button:not(:first-child) {
+    border-left: 1px solid var(--dark-bg-primary); /* Separator line color */
+}
+.tab-button:hover {
+    color: var(--primary-accent-color);
+    background-color: var(--dark-bg-tertiary);
+}
 .tab-char-name-display {
     display: inline-block;
-    padding: 2px 3px; /* Reduced padding */
+    padding: 2px 3px; 
     border-radius: 3px;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: text; 
-    font-size: 0.9em; /* Slightly smaller font for tab names */
+    font-size: 0.95em; 
 }
 
 .tab-button input.tab-char-name-input-edit {
-    background: var(--card-bg-color);
-    border: 1px solid var(--primary-color);
+    background: var(--dark-bg-tertiary);
+    border: 1px solid var(--primary-accent-color);
+    color: var(--light-text-primary);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    /* ... other existing styles ... */
     text-align: center;
     font-weight: 500;
-    color: var(--dark-text-color);
     padding: 8px 5px;
     width: calc(100% - 4px); 
     font-size: inherit;
     outline: none;
-    box-shadow: 0 0 5px rgba(0,123,255,.3);
     position: absolute;
     left: 2px; 
     top: 50%; transform: translateY(-50%);
@@ -398,54 +509,71 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 }
 
 
-.tab-button:first-child { border-left-color: transparent; }
+/* .tab-button:first-child { border-left-color: transparent; } */ /* Handled by not having border-left */
 .tab-button.active {
-    background-color: var(--card-bg-color); color: var(--primary-color);
-    border-top: 2px solid var(--primary-color);
-    border-left: 1px solid var(--primary-color);
-    border-right: 1px solid var(--primary-color);
-    border-bottom: 1px solid var(--card-bg-color);
+    background-color: var(--dark-bg-tertiary); 
+    color: var(--primary-accent-color);
+    border-top: 2px solid var(--primary-accent-color);
+    border-left: 1px solid var(--primary-accent-color);
+    border-right: 1px solid var(--primary-accent-color);
+    border-bottom: 1px solid var(--dark-bg-tertiary); /* Match panel bg */
     font-weight: 600; position: relative; z-index: 1; margin-bottom: -1px;
+    box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); /* Top glow for active tab */
 }
-.tab-button.active:first-child { border-left: 2px solid var(--primary-color); }
-.tab-button.active:last-child { border-right: 2px solid var(--primary-color); }
+.tab-button.active:first-child { border-left: 2px solid var(--primary-accent-color); }
+.tab-button.active:last-child { border-right: 2px solid var(--primary-accent-color); }
 .tab-button.active .tab-char-name-display {
     font-weight: 600;
+    text-shadow: var(--text-shadow-accent);
 }
 
 
-.character-panel { display: none; padding: 20px; background-color: var(--card-bg-color);
-    border: 1px solid var(--primary-color); border-top: none;
+.character-panel { 
+    display: none; 
+    padding: 25px; /* Increased padding */
+    background-color: var(--dark-bg-tertiary); /* Match active tab */
+    border: 1px solid var(--primary-accent-color); 
+    border-top: none;
     border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 .character-panel.active { display: block; }
 
 .base-stats-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px; margin-bottom: 20px;
+    gap: 20px; /* Increased gap */
+    margin-bottom: 25px;
 }
 .base-stats-grid .input-group { margin-bottom: 0; }
-.base-stats-grid .input-group label { font-weight: 500; }
-.base-stats-grid .input-group input, .base-stats-grid .input-group select { width: 100%; padding: 8px 10px; }
+/* .base-stats-grid .input-group label { font-weight: 500; } */
+/* .base-stats-grid .input-group input, .base-stats-grid .input-group select { width: 100%; padding: 8px 10px; } */
 
 .intermediate-result-display {
-    font-size: 0.9em; color: var(--primary-color); margin-right: 8px;
-    font-weight: bold; min-width: 50px; text-align: left;
+    font-size: 0.9em; color: var(--primary-accent-color); margin-right: 8px;
+    font-weight: bold; min-width: 60px; text-align: left; /* Increased min-width */
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
 }
 
 .bonus-item {
     display: grid;
     grid-template-columns: auto 1fr auto; 
-    gap: 8px 10px; align-items: center; margin-bottom: 10px;
-    padding: 10px 12px; border: 1px solid #e9ecef;
-    border-radius: var(--border-radius); background-color: var(--light-bg-color);
+    gap: 10px 15px; /* Increased gap */
+    align-items: center; 
+    margin-bottom: 15px;
+    padding: 15px; 
+    border: 1px solid var(--border-color-dark);
+    border-radius: var(--border-radius); 
+    background-color: var(--dark-bg-secondary); /* Item background */
+    transition: border-color 0.2s ease;
+}
+.bonus-item:hover {
+    border-color: var(--primary-accent-color);
 }
 .bonus-item .intermediate-result-display { grid-column: 1 / 2; }
 .bonus-item .item-main-content { 
     grid-column: 2 / 3; 
     display: flex; 
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
 }
 .bonus-item .item-actions { 
@@ -453,142 +581,197 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     display: flex; 
     flex-direction: column; 
     align-items: flex-end; 
-    gap: 10px; 
+    gap: 12px; 
     justify-self: end;
 }
 
 .item-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
 }
 .item-row > label:first-child { 
     min-width: 80px; 
     white-space: nowrap;
+    color: var(--light-text-secondary);
 }
-.item-row .input-with-suffix-wrapper {
-    flex-grow: 1; 
-}
+.item-row .input-with-suffix-wrapper { flex-grow: 1; }
 .item-row .bonus-value-input, .item-row select { 
     flex-grow: 1;
     min-width: 80px; 
+    background-color: var(--dark-bg-primary);
+    color: var(--light-text-primary);
+    border-color: var(--border-color-dark);
 }
-.item-row .applies-to-group {
-    margin-left: auto; 
+.item-row select option {
+    background-color: var(--dark-bg-secondary);
 }
-.item-row .special-damage-type-select {
-    min-width: 150px; 
-}
-.item-row .custom-type-input-wrapper {
-    flex-grow: 1;
-}
-.item-row .custom-type-input-wrapper.hidden {
-    display: none;
-}
+.item-row .applies-to-group { margin-left: auto; }
+.item-row .special-damage-type-select { min-width: 160px; }
+.item-row .custom-type-input-wrapper { flex-grow: 1; }
+.item-row .custom-type-input-wrapper.hidden { display: none; }
 
 
 .skill-multiplier-item .skill-type-label {
-    font-size: 0.95em;
-    padding-right: 5px;
+    font-size: 1em; /* Larger */
+    padding-right: 8px;
     white-space: nowrap;
-    min-width: 80px;
+    min-width: 90px;
+    color: var(--light-text-primary);
 }
 .skill-multiplier-item .selected-skill-label {
     font-weight: bold;
-    color: var(--primary-color);
-    font-size: 1.1em; 
-    text-shadow: 0 0 3px rgba(0,123,255,0.3); 
+    color: var(--primary-accent-color);
+    font-size: 1.15em; 
+    text-shadow: var(--text-shadow-accent); 
 }
 .skill-multiplier-item .alternate-skill-label {
-    color: var(--light-text-color);
+    color: var(--light-text-secondary);
     font-style: italic;
     font-size: 0.9em; 
 }
 .skill-multiplier-item input[type="radio"] {
-    margin-right: 5px;
+    margin-right: 8px;
+    transform: scale(1.2); /* Larger radio buttons */
+    accent-color: var(--primary-accent-color);
 }
 
 .bonus-item .remove-bonus {
-    padding: 5px 8px; 
-    font-size: 0.85em; 
-    background-color: var(--danger-color);
-    color: white; border: none; border-radius: var(--border-radius); cursor: pointer;
+    padding: 6px 10px; 
+    font-size: 0.9em; 
+    background-color: #555; /* Darker grey for remove */
+    color: var(--light-text-secondary); 
+    border: 1px solid var(--border-color-dark); 
+    border-radius: var(--border-radius); cursor: pointer;
     align-self: flex-end; 
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
+.bonus-item .remove-bonus:hover {
+    background-color: var(--danger-color); /* Original danger on hover */
+    color: white;
+    border-color: var(--danger-color);
+}
+
 .bonus-item .trigger-label {
     font-size: 1em; 
-    color: var(--dark-text-color); 
+    color: var(--light-text-primary); 
     font-weight: 500;
-    padding: 4px 6px; 
-    border: 1px solid var(--border-color); 
+    padding: 6px 8px; 
+    border: 1px solid var(--border-color-dark); 
     border-radius: 4px;
-    background-color: #f0f0f0; 
+    background-color: var(--dark-bg-tertiary); 
     display: flex; align-items: center; white-space: nowrap;
     cursor: pointer;
     order: -1; 
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+.bonus-item .trigger-label:hover {
+    border-color: var(--primary-accent-color);
+    color: var(--primary-accent-color);
 }
 .bonus-item .trigger-label input[type="checkbox"] {
     transform: scale(1.1); 
     margin-right: 8px;
+    accent-color: var(--primary-accent-color);
 }
 
 .applies-to-group { 
     display: flex;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
     justify-content: flex-start; 
-    font-size: 0.85em; 
+    font-size: 0.9em; 
     margin-bottom: 5px; 
 }
+.applies-to-group label { color: var(--light-text-secondary); }
+.applies-to-group label:hover { color: var(--primary-accent-color); }
+.applies-to-group input[type="radio"] { accent-color: var(--primary-accent-color); transform: scale(0.9); margin-right: 3px;}
+
 .bonus-item .item-actions .applies-to-group {
     width: 100%; 
     justify-content: flex-end; 
 }
 
 
-.input-section > button[type="button"] {
-    padding: 9px 15px; font-size: 0.95em; background-color: var(--success-color); color: white;
-    border: none; border-radius: var(--border-radius); cursor: pointer; margin-top: 8px;
+.input-section > button[type="button"] { /* Add button style */
+    padding: 10px 18px; 
+    font-size: 1em; 
+    background-color: transparent; 
+    color: var(--primary-accent-color);
+    border: 1px solid var(--primary-accent-color); 
+    border-radius: var(--border-radius); 
+    cursor: pointer; 
+    margin-top: 15px;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .input-section > button[type="button"]:hover {
-    background-color: #218838;
+    background-color: var(--primary-accent-color);
+    color: var(--dark-bg-secondary);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
 }
 
-.io-section-footer { margin-top: 20px; }
-.io-section-footer h3 { margin-bottom: 15px; }
+.io-section-footer { margin-top: 30px; padding-bottom: 10px; }
+.io-section-footer h3 { 
+    margin-bottom: 20px; 
+    border-bottom: 1px solid var(--border-color-accent); 
+    padding-bottom: 10px;
+}
 .io-section-content {
     display: flex;
-    gap: 20px;
+    gap: 25px;
 }
 .io-section-content > div {
     flex: 1;
 }
-.io-section-footer button {
-    padding: 9px 15px;
-    font-size: 0.95em;
-    background-color: var(--primary-color);
-    color: white;
+.io-section-footer button { /* Export button */
+    padding: 12px 20px;
+    font-size: 1em;
+    background-color: var(--primary-accent-color);
+    color: var(--dark-bg-primary);
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
     margin-top: 5px;
     margin-bottom: 10px;
     width: 100%;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 .io-section-footer button:hover {
-    background-color: var(--primary-hover-color);
+    background-color: var(--primary-accent-hover-color);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
 }
 .io-section-footer input[type="file"] {
-    padding: 8px;
-    border: 1px solid var(--border-color);
+    padding: 10px;
+    border: 1px dashed var(--primary-accent-color); /* Dashed border for file input */
     border-radius: 4px;
     width: 100%;
     font-size: 0.95em;
     margin-top: 5px;
+    background-color: var(--dark-bg-tertiary);
+    color: var(--light-text-secondary);
+    cursor: pointer;
+}
+.io-section-footer input[type="file"]::file-selector-button {
+    background-color: var(--primary-accent-color);
+    color: var(--dark-bg-primary);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
 }
 .io-section-footer .input-group label {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    color: var(--light-text-primary);
+}
+.io-section-footer p {
+    color: var(--light-text-secondary);
 }
 
 
@@ -602,7 +785,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
         flex-direction: row; 
         justify-content: space-between; 
         align-items: center;
-        margin-top: 8px;
+        margin-top: 10px;
         width: 100%;
     }
      .bonus-item .item-main-content .applies-to-group {
@@ -613,32 +796,25 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 
 
     .io-section-content { flex-direction: column; }
-    /* .overview-simplified-display { 
-        flex-wrap: wrap; 
-    } */
     .simplified-char-info { flex-basis: auto; margin-right: 10px; }
-    /* .simplified-triggers-group { flex-grow: 1; min-width: 150px; margin:0; justify-content: flex-start;} */
     .simplified-final-damage { flex-basis: auto; margin-left:auto;}
 }
 
 @media (max-width: 768px) {
-    /* :root { --overview-simplified-height: auto; } /* Consider if simplified header should be dynamic */
     .overview-panel {
-        max-height: 85vh; /* Reduce max height a bit more for smaller screens */
+        max-height: 85vh; 
     }
     .overview-header { 
         min-height: 45px; 
-        /* If overview-simplified-height is auto, tabs top position needs JS update or a fixed fallback */
     }
     .character-tabs { 
-        /* Assuming var(--overview-simplified-height) is fixed; if not, this needs adjustment */
         top: var(--overview-simplified-height, 50px); 
     } 
     .tab-button { 
-        min-width: 70px; /* Further reduce for smaller screens */
-        padding: 8px 2px;
+        min-width: 70px; 
+        padding: 10px 3px;
     }
-    .tab-char-name-display { font-size: 0.8em; }
+    .tab-char-name-display { font-size: 0.85em; }
 
 
     .simplified-char-info { flex-direction: row; gap: 5px; align-items: center; justify-content: flex-start; }
@@ -651,7 +827,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
 
 
     .main-container { padding: 10px; }
-    .card, .character-panel { padding: 15px; }
+    .card, .character-panel { padding: 20px; } /* Consistent padding */
     
     .tab-char-name-display, .tab-button input.tab-char-name-input-edit { font-size: 0.85em; padding: 8px 3px;}
 
@@ -660,7 +836,7 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     .bonus-item > * {
       grid-column: 1 / -1 !important;
       justify-self: stretch !important;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
     }
     .bonus-item .item-main-content .item-row {
         flex-direction: column;
@@ -686,9 +862,9 @@ h5 { font-size: 1.05em; color: var(--primary-color); margin-bottom: 8px; font-we
     h3 { font-size: 1.1em; }
     h4 { font-size: 1.05em; }
     h5 { font-size: 1em; }
-    .simplified-triggers-group .checkbox-label { white-space: normal; } /* Allow wrapping for smallest */
+    .simplified-triggers-group .checkbox-label { white-space: normal; } 
     .overview-toggle-btn { padding: 4px 6px; font-size: 1em; }
     .simplified-char-info { flex-direction: column; align-items: flex-start; }
     .simplified-final-damage { margin-left: 0; }
-    .tab-button { min-width: 60px; } /* Smallest min-width for tabs */
+    .tab-button { min-width: 65px; } 
 }
