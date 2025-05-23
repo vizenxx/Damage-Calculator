@@ -1,6 +1,7 @@
 // js/main.js
-// (Keep everything else the same as the previous complete version)
-// Only showing modified/new functions for responsive showcase height and sticky tab logic
+// (No changes to JS are strictly required for the CSS-based sticky and mask adjustments described in this iteration,
+// assuming the previous JS for responsive showcase height and overview panel height variable is already in place.)
+// For brevity, I'll show only the relevant parts that were previously modified, ensuring they are still correct.
 
 function populateSimplifiedTriggers() {
     const container = document.getElementById('simplifiedTriggersContainer');
@@ -116,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
         populateSimplifiedTriggers(); 
         setupBackgroundControls(); 
         setupPanelOpacityControls(); 
-        setupResponsiveShowcaseHeight(); // New function for responsive height
-        setupStickyTabsObserver(); // Keeps its original role for overview panel height var
+        setupResponsiveShowcaseHeight();
+        setupStickyTabsObserver();
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -154,7 +155,7 @@ function setupGlobalUITogglesAndInteractions() {
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
             updateOverviewPanelHeightVar(); 
-            updateShowcaseHeight(); // Recalculate showcase height if overview panel changes size
+            updateShowcaseHeight(); 
         });
     }
 }
@@ -248,7 +249,6 @@ function updateOverviewPanelHeightVar() {
     }
 }
 
-// New function to update --dynamic-showcase-height
 function updateShowcaseHeight() {
     const mainContainer = document.querySelector('.main-container');
     const showcaseArea = document.getElementById('backgroundShowcaseArea');
@@ -257,23 +257,21 @@ function updateShowcaseHeight() {
     const containerWidth = mainContainer.offsetWidth;
     let newHeight;
 
-    if (window.innerWidth <= 768) { // Example breakpoint for "narrow" (mobile)
+    if (window.innerWidth <= 768) { 
         newHeight = containerWidth * (2 / 3);
-    } else { // Wider screens
+    } else { 
         newHeight = containerWidth * (1 / 3);
     }
-    newHeight = Math.max(150, Math.min(newHeight, 450)); // Min 150px, Max 450px
+    newHeight = Math.max(150, Math.min(newHeight, 450)); 
     
     document.documentElement.style.setProperty('--dynamic-showcase-height', `${newHeight}px`);
-    showcaseArea.style.height = `${newHeight}px`; // Also directly set, CSS var is for padding
+    showcaseArea.style.height = `${newHeight}px`;
 }
 
-// Setup listener for responsive showcase height
 function setupResponsiveShowcaseHeight() {
-    updateShowcaseHeight(); // Initial call
+    updateShowcaseHeight(); 
     window.addEventListener('resize', updateShowcaseHeight);
 
-    // Also observe main container for width changes if it's not always full window width
     const mainContainer = document.querySelector('.main-container');
     if (mainContainer) {
         const resizeObserver = new ResizeObserver(updateShowcaseHeight);
@@ -288,23 +286,13 @@ function setupStickyTabsObserver() {
 
     updateOverviewPanelHeightVar(); 
 
-    // This observer is for the overview panel's height, which affects sticky tab positioning
     const observer = new ResizeObserver(entries => {
         for (let entry of entries) {
             updateOverviewPanelHeightVar();
-            // When overview panel resizes, it might affect where tabs should stick
-            // No, tabs are sticky relative to .main-scrollable-content now.
-            // But showcase area height might need update if overview changes.
-            updateShowcaseHeight(); 
+            updateShowcaseHeight(); // Keep this to ensure showcase area padding is correct
         }
     });
     observer.observe(overviewPanel);
-
-    // Note: The logic for Character Tabs becoming sticky and Character Panels fading
-    // is now primarily handled by CSS (position: sticky for tabs, mask-image for panels).
-    // If more complex JS-driven observation is needed for the fade based on scroll,
-    // an IntersectionObserver on character-panels-container would be added here.
-    // For now, relying on CSS mask which is simpler if it works across browsers.
 }
 
 
