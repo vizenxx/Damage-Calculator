@@ -1,7 +1,5 @@
 // js/main.js
-// (No changes to JS are strictly required for the CSS-based sticky and mask adjustments described in this iteration,
-// assuming the previous JS for responsive showcase height and overview panel height variable is already in place.)
-// For brevity, I'll show only the relevant parts that were previously modified, ensuring they are still correct.
+// 主要关注 updateShowcaseHeight 函数的准确性。其他函数保持不变。
 
 function populateSimplifiedTriggers() {
     const container = document.getElementById('simplifiedTriggersContainer');
@@ -154,8 +152,11 @@ function setupGlobalUITogglesAndInteractions() {
             const isSimplified = overviewPanel.classList.toggle('simplified');
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
-            updateOverviewPanelHeightVar(); 
-            updateShowcaseHeight(); 
+            // Wait for animation/transition to complete before updating heights
+            setTimeout(() => {
+                updateOverviewPanelHeightVar(); 
+                updateShowcaseHeight(); 
+            }, 50); // Adjust timeout if needed
         });
     }
 }
@@ -244,8 +245,11 @@ function setupPanelOpacityControls() {
 function updateOverviewPanelHeightVar() {
     const overviewPanel = document.getElementById('overviewPanel'); 
     if (overviewPanel) {
-        const overviewHeight = overviewPanel.offsetHeight;
-        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
+        // Request animation frame to get height after layout changes
+        requestAnimationFrame(() => {
+            const overviewHeight = overviewPanel.offsetHeight;
+            document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
+        });
     }
 }
 
@@ -254,18 +258,20 @@ function updateShowcaseHeight() {
     const showcaseArea = document.getElementById('backgroundShowcaseArea');
     if (!mainContainer || !showcaseArea) return;
 
-    const containerWidth = mainContainer.offsetWidth;
+    // Use clientWidth for content width, or offsetWidth if padding/border should be included
+    const containerWidth = mainContainer.clientWidth; 
     let newHeight;
 
-    if (window.innerWidth <= 768) { 
+    // Make sure window.innerWidth is reliable, or use a media query match if available
+    if (window.matchMedia("(max-width: 768px)").matches) { 
         newHeight = containerWidth * (2 / 3);
     } else { 
         newHeight = containerWidth * (1 / 3);
     }
-    newHeight = Math.max(150, Math.min(newHeight, 450)); 
+    newHeight = Math.max(100, Math.min(newHeight, 350)); // Adjusted Min/Max heights
     
     document.documentElement.style.setProperty('--dynamic-showcase-height', `${newHeight}px`);
-    showcaseArea.style.height = `${newHeight}px`;
+    // showcaseArea.style.height = `${newHeight}px`; // No longer directly setting height if it's just a CSS var user
 }
 
 function setupResponsiveShowcaseHeight() {
@@ -289,7 +295,7 @@ function setupStickyTabsObserver() {
     const observer = new ResizeObserver(entries => {
         for (let entry of entries) {
             updateOverviewPanelHeightVar();
-            updateShowcaseHeight(); // Keep this to ensure showcase area padding is correct
+            updateShowcaseHeight(); 
         }
     });
     observer.observe(overviewPanel);
