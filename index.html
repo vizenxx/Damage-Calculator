@@ -96,54 +96,57 @@
             <div class="formula-trace-area global-trace" id="formulaTrace_overview"></div>
         </div>
 
-        <div class="background-showcase-area" id="backgroundShowcaseArea">
-        </div>
-
-        <div class="tabs-and-panels-container">
-            <div class="character-tabs" id="characterTabs">
+        <!-- New wrapper for all content that scrolls below the overview panel -->
+        <div class="scrollable-content-wrapper">
+            <div class="background-showcase-area" id="backgroundShowcaseArea">
             </div>
-            <div id="character-panels-container">
-            </div>
-        </div>
 
-        <div class="settings-footer card">
-            <h3>应用设置</h3>
-            <div class="settings-footer-content">
-                <div class="settings-column config-management">
-                    <h4>配置管理</h4>
-                    <div class="input-group export-group">
-                        <button type="button" id="exportConfigButton">导出配置</button>
-                    </div>
-                    <div class="input-group import-group">
-                        <label for="importConfigFile">导入配置:</label>
-                        <input type="file" id="importConfigFile" accept=".json">
-                    </div>
-                    <p style="font-size: 0.85em; color: var(--light-text-secondary); margin-top: 10px;"><i>导入配置后，页面将使用文件中的数据刷新。请确保文件来源可靠。</i></p>
+            <div class="tabs-and-panels-container">
+                <div class="character-tabs" id="characterTabs">
                 </div>
-
-                <div class="settings-column background-settings">
-                    <h4>背景设置</h4>
-                    <div class="input-group">
-                        <label for="backgroundImageInput">选择背景图片:</label>
-                        <input type="file" id="backgroundImageInput" accept="image/*">
-                    </div>
-                    <div class="input-group">
-                        <label for="backgroundOpacitySlider">背景图片透明度: <span id="backgroundOpacityValue">100</span>%</label>
-                        <input type="range" id="backgroundOpacitySlider" min="0" max="100" value="100" step="1">
-                    </div>
-                    <div class="input-group">
-                        <button type="button" id="resetBackgroundButton">移除背景图片</button>
-                    </div>
+                <div id="character-panels-container">
                 </div>
             </div>
-            <div class="panel-transparency-settings">
-                 <h4>面板透明度</h4>
-                 <div class="input-group">
-                    <label for="panelOpacitySlider">数据面板透明度: <span id="panelOpacityValue">100</span>%</label>
-                    <input type="range" id="panelOpacitySlider" min="50" max="100" value="100" step="1">
+
+            <div class="settings-footer card">
+                <h3>应用设置</h3>
+                <div class="settings-footer-content">
+                    <div class="settings-column config-management">
+                        <h4>配置管理</h4>
+                        <div class="input-group export-group">
+                            <button type="button" id="exportConfigButton">导出配置</button>
+                        </div>
+                        <div class="input-group import-group">
+                            <label for="importConfigFile">导入配置:</label>
+                            <input type="file" id="importConfigFile" accept=".json">
+                        </div>
+                        <p style="font-size: 0.85em; color: var(--light-text-secondary); margin-top: 10px;"><i>导入配置后，页面将使用文件中的数据刷新。请确保文件来源可靠。</i></p>
+                    </div>
+
+                    <div class="settings-column background-settings">
+                        <h4>背景设置</h4>
+                        <div class="input-group">
+                            <label for="backgroundImageInput">选择背景图片:</label>
+                            <input type="file" id="backgroundImageInput" accept="image/*">
+                        </div>
+                        <div class="input-group">
+                            <label for="backgroundOpacitySlider">背景图片透明度: <span id="backgroundOpacityValue">100</span>%</label>
+                            <input type="range" id="backgroundOpacitySlider" min="0" max="100" value="100" step="1">
+                        </div>
+                        <div class="input-group">
+                            <button type="button" id="resetBackgroundButton">移除背景图片</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-transparency-settings">
+                     <h4>面板透明度</h4>
+                     <div class="input-group">
+                        <label for="panelOpacitySlider">数据面板透明度: <span id="panelOpacityValue">100</span>%</label>
+                        <input type="range" id="panelOpacitySlider" min="50" max="100" value="100" step="1">
+                    </div>
                 </div>
             </div>
-        </div>
+        </div> <!-- End of scrollable-content-wrapper -->
     </div>
 
     <script src="js/config.js"></script>
