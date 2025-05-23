@@ -1,4 +1,4 @@
-/* style.css - Final Tweaks */
+/* style.css - Final Tweaks with Showcase Area */
 :root {
     --primary-accent-color: #00f0ff; 
     --primary-accent-hover-color: #00c0cc;
@@ -10,7 +10,6 @@
     --dark-bg-secondary-rgb: 26, 28, 35;
     --dark-bg-tertiary: #252830; 
     --dark-bg-tertiary-rgb: 37, 40, 48;
-
 
     --light-text-primary: #e0e0e0; 
     --light-text-secondary: #a0a0a0; 
@@ -25,8 +24,12 @@
     --border-radius: 6px;
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     
-    --overview-panel-height: 50px; /* Default/Simplified height, JS will update this */
-    --tabs-height: 42px; /* This might not be strictly needed if tabs height is natural */
+    --overview-panel-height: 50px; /* JS will update this based on actual overview panel height */
+    --background-showcase-height: 350px; 
+
+    --panel-bg-primary-alpha: 1; 
+    --panel-bg-secondary-alpha: 1; 
+    --panel-bg-tertiary-alpha: 1;
 }
 
 html { box-sizing: border-box; }
@@ -82,7 +85,7 @@ body {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 0; 
     position: relative; 
     z-index: 1;
 }
@@ -166,19 +169,19 @@ h5 {
 
 .overview-panel { 
     position: sticky;
-    top: 0;
-    z-index: 1002;
-    margin-bottom: 20px;
+    top: 0; 
+    z-index: 1002; 
+    /* margin-bottom will be handled by showcase area or gap if needed */
     max-height: 95vh; 
     display: flex; 
     flex-direction: column;
     border: 1px solid var(--border-color-dark);
+    /* background-color is via .card */
 }
 .overview-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* min-height: var(--overview-simplified-height); /* Height will be natural or set by JS */
     padding: 10px 15px; 
     position: relative; 
     flex-shrink: 0; 
@@ -330,6 +333,54 @@ h5 {
 }
 
 
+.background-showcase-area {
+    height: var(--background-showcase-height);
+    position: relative; 
+    z-index: 998; /* Below overview, above tabs */
+    pointer-events: none; /* Let clicks pass through to background if needed, or content below */
+}
+
+.background-showcase-area::before { 
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+        rgba(var(--dark-bg-primary-rgb), 1) 0%, 
+        rgba(var(--dark-bg-primary-rgb), 0.9) 15%, /* Start fading sooner */
+        rgba(var(--dark-bg-primary-rgb), 0.3) 60%, /* Mostly transparent mid-way */
+        rgba(var(--dark-bg-primary-rgb), 0) 100% 
+    );
+    pointer-events: none; 
+    z-index: 1; 
+}
+
+
+.tabs-and-panels-container {
+    position: relative; 
+    z-index: 990; 
+}
+
+.character-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--primary-accent-color);
+    position: sticky;
+    top: calc(var(--overview-panel-height) + var(--background-showcase-height)); /* Dynamic top position */
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
+    z-index: 1000; 
+    padding: 0;
+    width: 100%;
+    transition: top 0.1s ease-out, background-color 0.2s ease-out;
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch; 
+    scrollbar-width: thin; 
+    scrollbar-color: var(--primary-accent-color) var(--dark-bg-secondary); 
+}
+
+/* ... (Rest of CSS, make sure the styles from previous response for opacity variables are applied everywhere, e.g., inputs, character panels, etc. This is just a snippet for brevity) ... */
+/* Ensure all panel background colors use the --panel-bg-xxx-alpha variables */
 .overview-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px; align-items: start;
@@ -488,23 +539,6 @@ h5 {
 .trace-value { font-weight: bold; color: var(--primary-accent-color); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); }
 .trace-comment { color: #888; font-style: italic; font-size: 0.9em; }
 
-.character-tabs {
-    display: flex;
-    border-bottom: 2px solid var(--primary-accent-color);
-    margin-bottom: -1px; /* Overlap border with panel */
-    position: sticky;
-    top: var(--overview-panel-height); /* JS will update this variable */
-    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
-    z-index: 1000;
-    padding: 0;
-    width: 100%;
-    transition: top 0.3s ease-out, background-color 0.2s ease-out;
-    overflow-x: auto; 
-    -webkit-overflow-scrolling: touch; 
-    scrollbar-width: thin; 
-    scrollbar-color: var(--primary-accent-color) var(--dark-bg-secondary); 
-}
-
 .character-tabs::-webkit-scrollbar { height: 6px; }
 .character-tabs::-webkit-scrollbar-track { background: var(--dark-bg-secondary); border-radius: 3px; }
 .character-tabs::-webkit-scrollbar-thumb { background-color: var(--primary-accent-color); border-radius: 3px; }
@@ -512,7 +546,8 @@ h5 {
 .tab-button {
     flex-grow: 1; 
     flex-basis: 0; 
-    /* min-width: 70px; /* Removed to allow full stretch */
+    flex-shrink: 1; 
+    /* min-width: 70px; /* Allow full stretch, scroll on parent will handle overflow */
     border: 1px solid transparent;
     border-bottom: none;
     cursor: pointer;
@@ -524,7 +559,7 @@ h5 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 5px; /* Adjusted padding */
+    padding: 12px 5px; 
     position: relative;
     white-space: nowrap; 
 }
@@ -676,25 +711,21 @@ h5 {
     color: var(--light-text-primary);
 }
 .skill-multiplier-item .selected-skill-label {
-    font-weight: bold; /* Made bold */
+    font-weight: bold; 
     color: var(--primary-accent-color);
     font-size: 1.15em; 
     text-shadow: var(--text-shadow-accent); 
 }
 .skill-multiplier-item .alternate-skill-label {
-    color: var(--light-text-secondary); /* More greyish */
+    color: var(--light-text-secondary); 
     font-style: italic;
     font-size: 0.9em; 
-    font-weight: normal; /* Ensure not bold */
+    font-weight: normal; 
 }
 .skill-multiplier-item input[type="radio"] {
     margin-right: 8px;
     transform: scale(1.2); 
     accent-color: var(--primary-accent-color);
-}
-.skill-multiplier-item input[type="radio"]:checked { /* Style for the selected radio button */
-    /* Modern browsers use accent-color. For older ones, more complex SVG might be needed. */
-    /* This is often sufficient with accent-color. */
 }
 
 
@@ -829,14 +860,14 @@ h5 {
     font-weight: bold;
 }
 
-.settings-footer input[type="range"] { /* General style for all range sliders in settings */
+.settings-footer input[type="range"] { 
     width: 100%;
     cursor: pointer;
     accent-color: var(--primary-accent-color); 
 }
 .settings-footer input[type="range"]::-webkit-slider-runnable-track {
   width: 100%; height: 8px; cursor: pointer; 
-  background: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); /* Respects panel opacity */
+  background: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
   border-radius: 5px; border: 1px solid var(--border-color-dark); 
   transition: background-color 0.2s ease-out;
 }
@@ -864,7 +895,7 @@ h5 {
 .settings-footer .background-settings button#resetBackgroundButton:hover {
     background-color: var(--primary-accent-hover-color);
 }
-.settings-footer .export-group button { /* Config export button */
+.settings-footer .export-group button { 
     padding: 12px 20px;
     font-size: 1em;
     background-color: var(--primary-accent-color);
@@ -909,7 +940,7 @@ h5 {
     cursor: pointer;
     margin-right: 10px;
 }
-.settings-footer p { /* Info text for import */
+.settings-footer p { 
     color: var(--light-text-secondary);
 }
 
@@ -947,8 +978,8 @@ h5 {
     }
     /* .character-tabs top value will be set by JS */
     .tab-button { 
-        min-width: auto; /* Allow full flex shrink/grow on mobile */
-        padding: 10px 5px; /* Adjust padding */
+        min-width: auto; 
+        padding: 10px 5px; 
     }
     .tab-char-name-display { font-size: 0.85em; }
 
@@ -1003,5 +1034,5 @@ h5 {
     .overview-toggle-btn { padding: 4px 6px; font-size: 1em; }
     .simplified-char-info { flex-direction: column; align-items: flex-start; }
     .simplified-final-damage { margin-left: 0; }
-    /* .tab-button { min-width: 60px; }  Allow flex to fully manage on very small */
+    /* .tab-button { min-width: 60px; } /* Allow flex for smallest */
 }
