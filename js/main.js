@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         populateSimplifiedTriggers(); 
         setupBackgroundControls(); 
         setupPanelOpacityControls(); 
+        setupStickyTabsObserver(); // NEW: For sticky tabs positioning
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -29,7 +30,7 @@ function populateSimplifiedTriggers() {
         { id: 's_burst', label: '爆', fieldName: 'burstUp_isTriggered_QUICKVIEW', title: '爆裂UP' },
         { id: 's_sup', label: '优', fieldName: 'superiorityUp_isBaseTriggered_isTriggered_QUICKVIEW', title: '优越UP(基础)' },
         { id: 's_core', label: '核', fieldName: 'coreDamageBaseChoiceTriggered_isTriggered_QUICKVIEW', title: '核心伤触发' },
-        { id: 's_charge_trig', label: '蓄', fieldName: 'chargeUpBase_isTriggered_QUICKVIEW', title: '蓄力基础触发'} // Changed "蓄触" to "蓄"
+        { id: 's_charge_trig', label: '蓄', fieldName: 'chargeUpBase_isTriggered_QUICKVIEW', title: '蓄力基础触发'}
     ];
 
     let html = '';
@@ -84,6 +85,8 @@ function setupGlobalUITogglesAndInteractions() {
             const isSimplified = overviewPanel.classList.toggle('simplified');
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
+            // Height of overviewPanel might change, trigger tab position update
+            updateStickyTabsPosition(); 
         });
     }
 }
@@ -110,7 +113,6 @@ function setupBackgroundControls() {
                 backgroundLayer.style.backgroundSize = '100% auto'; 
                 backgroundLayer.style.backgroundPosition = 'center top'; 
                 backgroundLayer.classList.add('has-image'); 
-                // Apply current opacity slider value to new image
                 const currentOpacity = parseFloat(backgroundOpacitySlider.value) / 100;
                 backgroundLayer.style.opacity = currentOpacity;
 
@@ -122,7 +124,7 @@ function setupBackgroundControls() {
             if (backgroundLayer.style.backgroundImage && backgroundLayer.style.backgroundImage !== 'none') {
                 backgroundLayer.style.opacity = opacity;
             } else {
-                 backgroundLayer.style.opacity = 1; // Reset to full opacity (transparent to body) if no image
+                 backgroundLayer.style.opacity = 1; 
             }
             backgroundOpacityValue.textContent = event.target.value;
         });
@@ -134,18 +136,16 @@ function setupBackgroundControls() {
             }
             backgroundLayer.style.backgroundImage = 'none';
             backgroundLayer.classList.remove('has-image'); 
-            backgroundOpacitySlider.value = 100; // Reset slider
-            backgroundLayer.style.opacity = 1; // Reset layer opacity
+            backgroundOpacitySlider.value = 100; 
+            backgroundLayer.style.opacity = 1; 
             backgroundOpacityValue.textContent = 100;
             backgroundImageInput.value = null; 
         });
         
-        // Initial state
         backgroundOpacityValue.textContent = backgroundOpacitySlider.value;
         if (!backgroundLayer.style.backgroundImage || backgroundLayer.style.backgroundImage === 'none') {
-            backgroundLayer.style.opacity = 1; // Show body background fully
+            backgroundLayer.style.opacity = 1; 
         } else {
-            // If an image was somehow persisted (not by this script, but e.g. browser cache for URL)
             backgroundLayer.style.opacity = parseFloat(backgroundOpacitySlider.value) / 100;
         }
     }
@@ -159,19 +159,46 @@ function setupPanelOpacityControls() {
     if (panelOpacitySlider && panelOpacityValue) {
         const applyOpacity = (value) => {
             const alpha = parseFloat(value) / 100;
+            root.style.setProperty('--panel-bg-primary-alpha', alpha);
             root.style.setProperty('--panel-bg-secondary-alpha', alpha);
-            root.style.setProperty('--panel-bg-tertiary-alpha', alpha);
-            root.style.setProperty('--panel-bg-primary-alpha', alpha); // For input fields etc.
+            root.style.setProperty('--panel-bg-tertiary-alpha', alpha); 
             panelOpacityValue.textContent = value;
         };
 
         panelOpacitySlider.addEventListener('input', (event) => {
             applyOpacity(event.target.value);
         });
-
-        // Initialize
         applyOpacity(panelOpacitySlider.value);
     }
+}
+
+function updateStickyTabsPosition() {
+    const overviewPanel = document.getElementById('overviewPanel'); // The whole sticky overview
+    const characterTabs = document.getElementById('characterTabs');
+    if (overviewPanel && characterTabs) {
+        const overviewHeight = overviewPanel.offsetHeight;
+        characterTabs.style.top = `${overviewHeight}px`;
+        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
+    }
+}
+
+function setupStickyTabsObserver() {
+    const overviewPanel = document.getElementById('overviewPanel');
+    if (!overviewPanel) return;
+
+    updateStickyTabsPosition(); // Initial call
+
+    const observer = new ResizeObserver(entries => {
+        for (let entry of entries) {
+            // We're observing overviewPanel, so its height change will trigger this
+            updateStickyTabsPosition();
+        }
+    });
+
+    observer.observe(overviewPanel);
+    // Also observe overviewHeader if its visibility/content changes affect total sticky height separately
+    // const overviewHeader = document.getElementById('overviewHeader');
+    // if (overviewHeader) observer.observe(overviewHeader);
 }
 
 
@@ -182,7 +209,7 @@ function initApplication() {
     if(enemyHasCoreEl) enemy.hasCore = enemyHasCoreEl.checked; else enemy.hasCore = true;
 
     const characterPanelsContainer = document.getElementById('character-panels-container');
-    const characterTabsContainer = document.querySelector('.character-tabs');
+    const characterTabsContainer = document.querySelector('.character-tabs'); // This is #characterTabs now
     if (!characterPanelsContainer || !characterTabsContainer) {
         alert("无法初始化角色面板，页面结构缺失！"); return;
     }
@@ -439,7 +466,7 @@ function updateOverviewPanel(charIndex) {
         { id: 's_burstTrigger_simplified', dataKey: 'burstUp', prop: 'isTriggered', type: 'checkbox' },
         { id: 's_supTrigger_simplified', dataKey: 'superiorityUp', prop: 'isBaseTriggered', type: 'checkbox' },
         { id: 's_coreTrigger_simplified', dataKey: null, prop: 'coreDamageBaseChoiceTriggered', type: 'checkbox' },
-        { id: 's_charge_trigTrigger_simplified', dataKey: 'chargeUpBase', prop: 'isTriggered', type: 'checkbox'}, // Label '蓄' in populateSimplifiedTriggers
+        { id: 's_charge_trigTrigger_simplified', dataKey: 'chargeUpBase', prop: 'isTriggered', type: 'checkbox'}, 
         { id: 's_chargeValue_simplified', dataKey: 'chargeUpBase', prop: 'value', type: 'select'}
     ];
     simplifiedTriggersMap.forEach(trigger => {
