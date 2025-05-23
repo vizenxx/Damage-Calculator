@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setupGlobalUITogglesAndInteractions();
         setupSimplifiedExportImportListeners();
         populateSimplifiedTriggers(); 
-        setupBackgroundControls(); // Initialize background controls
+        setupBackgroundControls(); 
+        setupPanelOpacityControls(); // NEW: Initialize panel opacity controls
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ... (populateSimplifiedTriggers, setupGlobalUITogglesAndInteractions, setupBackgroundControls are the same as previous correct version) ...
 function populateSimplifiedTriggers() {
     const container = document.getElementById('simplifiedTriggersContainer');
     if (!container) return;
@@ -60,7 +62,6 @@ function populateSimplifiedTriggers() {
         simplifiedChargeSelect.addEventListener('change', handleGlobalNonPanelInput);
     }
 }
-
 
 function setupGlobalUITogglesAndInteractions() {
     const showTraceCheckbox = document.getElementById('showFormulaTraceGlobal');
@@ -109,17 +110,16 @@ function setupBackgroundControls() {
                 backgroundLayer.style.backgroundImage = `url('${currentObjectURL}')`;
                 backgroundLayer.style.backgroundSize = '100% auto'; 
                 backgroundLayer.style.backgroundPosition = 'center top'; 
-                backgroundLayer.classList.add('has-image'); // Add class to enable gradient
+                backgroundLayer.classList.add('has-image'); 
             }
         });
 
         backgroundOpacitySlider.addEventListener('input', function(event) {
             const opacity = event.target.value / 100;
-            // Only apply opacity if there's an image; otherwise, body bg shows through
             if (backgroundLayer.style.backgroundImage && backgroundLayer.style.backgroundImage !== 'none') {
                 backgroundLayer.style.opacity = opacity;
             } else {
-                 backgroundLayer.style.opacity = 1; // Keep it fully opaque (transparent to body bg) if no image
+                 backgroundLayer.style.opacity = 1; 
             }
             backgroundOpacityValue.textContent = event.target.value;
         });
@@ -130,22 +130,39 @@ function setupBackgroundControls() {
                 currentObjectURL = null;
             }
             backgroundLayer.style.backgroundImage = 'none';
-            backgroundLayer.classList.remove('has-image'); // Remove class to disable gradient
+            backgroundLayer.classList.remove('has-image'); 
             backgroundOpacitySlider.value = 100;
-            backgroundLayer.style.opacity = 1; // Reset opacity (will show body bg)
+            backgroundLayer.style.opacity = 1; 
             backgroundOpacityValue.textContent = 100;
             backgroundImageInput.value = null; 
         });
-
-        // Initialize slider text
         backgroundOpacityValue.textContent = backgroundOpacitySlider.value;
-        // Initialize opacity if needed (e.g. from localStorage, but not required by prompt)
-        // if no image initially, ensure opacity doesn't hide body bg
         if (!backgroundLayer.style.backgroundImage || backgroundLayer.style.backgroundImage === 'none') {
-            backgroundLayer.style.opacity = 1; // effectively transparent to body background
+            backgroundLayer.style.opacity = 1; 
         }
+    }
+}
 
+function setupPanelOpacityControls() {
+    const panelOpacitySlider = document.getElementById('panelOpacitySlider');
+    const panelOpacityValue = document.getElementById('panelOpacityValue');
+    const root = document.documentElement;
 
+    if (panelOpacitySlider && panelOpacityValue) {
+        const applyOpacity = (value) => {
+            const alpha = value / 100;
+            root.style.setProperty('--panel-bg-secondary-alpha', alpha);
+            root.style.setProperty('--panel-bg-tertiary-alpha', alpha);
+            // Add more if you have other panel background variables that need alpha
+            panelOpacityValue.textContent = value;
+        };
+
+        panelOpacitySlider.addEventListener('input', (event) => {
+            applyOpacity(event.target.value);
+        });
+
+        // Initialize
+        applyOpacity(panelOpacitySlider.value);
     }
 }
 
@@ -278,8 +295,7 @@ function handleCharacterPanelInput(event) {
 
 function handleGlobalNonPanelInput(event) {
     const target = event.target;
-    // Updated to also ignore inputs from background-settings-footer as they are self-handled
-    if (target.closest('.character-panel') || target.closest('.background-settings-footer')) return; 
+    if (target.closest('.character-panel') || target.closest('.settings-footer')) return; // Ignore inputs in panels or combined settings footer
 
     let needsRecalc = false;
     const activeCharData = characters[activeCharacterIndex];
