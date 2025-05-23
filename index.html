@@ -24,7 +24,8 @@
                 <button type="button" id="toggleOverviewBtn" class="overview-toggle-btn" aria-label="收起概览">▲</button>
             </div>
             <div class="overview-content">
-                <div class="overview-grid">
+                {/* ... overview content ... */}
+                 <div class="overview-grid">
                     <div class="overview-section character-quick-view">
                         <h3>当前角色: <span id="currentQuickViewCharName">角色 1</span></h3>
                         
@@ -96,16 +97,19 @@
             <div class="formula-trace-area global-trace" id="formulaTrace_overview"></div>
         </div>
 
+        <div class="background-showcase-area" id="backgroundShowcaseArea">
+            {/* This area is for showing the background. Gradient overlay will be applied via CSS. */}
+        </div>
+
         <div class="tabs-and-panels-container">
-            <div class="character-tabs" id="characterTabs"> {/* Added ID for height observation target */}
-                {/* Tabs will be populated by JS */}
+            <div class="character-tabs" id="characterTabs">
             </div>
             <div id="character-panels-container">
-                {/* Character panels will be populated by JS */}
             </div>
         </div>
 
         <div class="settings-footer card">
+            {/* ... settings footer content ... */}
             <h3>应用设置</h3>
             <div class="settings-footer-content">
                 <div class="settings-column config-management">
@@ -143,7 +147,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <script src="js/config.js"></script>
