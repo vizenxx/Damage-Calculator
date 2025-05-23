@@ -106,16 +106,21 @@ function setupBackgroundControls() {
                 }
                 currentObjectURL = URL.createObjectURL(file);
                 
-                // No need to use new Image() to get dimensions if we are strictly aligning to width.
                 backgroundLayer.style.backgroundImage = `url('${currentObjectURL}')`;
-                backgroundLayer.style.backgroundSize = '100% auto'; // 对齐宽度，高度自动
-                backgroundLayer.style.backgroundPosition = 'center top'; // Show top of image if taller
+                backgroundLayer.style.backgroundSize = '100% auto'; 
+                backgroundLayer.style.backgroundPosition = 'center top'; 
+                backgroundLayer.classList.add('has-image'); // Add class to enable gradient
             }
         });
 
         backgroundOpacitySlider.addEventListener('input', function(event) {
             const opacity = event.target.value / 100;
-            backgroundLayer.style.opacity = opacity;
+            // Only apply opacity if there's an image; otherwise, body bg shows through
+            if (backgroundLayer.style.backgroundImage && backgroundLayer.style.backgroundImage !== 'none') {
+                backgroundLayer.style.opacity = opacity;
+            } else {
+                 backgroundLayer.style.opacity = 1; // Keep it fully opaque (transparent to body bg) if no image
+            }
             backgroundOpacityValue.textContent = event.target.value;
         });
 
@@ -125,12 +130,22 @@ function setupBackgroundControls() {
                 currentObjectURL = null;
             }
             backgroundLayer.style.backgroundImage = 'none';
-            // backgroundLayer.style.backgroundSize = 'cover'; // Reset, though 'none' makes it irrelevant
+            backgroundLayer.classList.remove('has-image'); // Remove class to disable gradient
             backgroundOpacitySlider.value = 100;
-            backgroundLayer.style.opacity = 1;
+            backgroundLayer.style.opacity = 1; // Reset opacity (will show body bg)
             backgroundOpacityValue.textContent = 100;
             backgroundImageInput.value = null; 
         });
+
+        // Initialize slider text
+        backgroundOpacityValue.textContent = backgroundOpacitySlider.value;
+        // Initialize opacity if needed (e.g. from localStorage, but not required by prompt)
+        // if no image initially, ensure opacity doesn't hide body bg
+        if (!backgroundLayer.style.backgroundImage || backgroundLayer.style.backgroundImage === 'none') {
+            backgroundLayer.style.opacity = 1; // effectively transparent to body background
+        }
+
+
     }
 }
 
@@ -263,6 +278,7 @@ function handleCharacterPanelInput(event) {
 
 function handleGlobalNonPanelInput(event) {
     const target = event.target;
+    // Updated to also ignore inputs from background-settings-footer as they are self-handled
     if (target.closest('.character-panel') || target.closest('.background-settings-footer')) return; 
 
     let needsRecalc = false;
