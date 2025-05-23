@@ -1,4 +1,4 @@
-/* style.css - Dark Theme Overhaul with Background & Panel Transparency */
+/* style.css - Final Tweaks */
 :root {
     --primary-accent-color: #00f0ff; 
     --primary-accent-hover-color: #00c0cc;
@@ -25,13 +25,8 @@
     --border-radius: 6px;
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     
-    --overview-simplified-height: 50px; 
-    --tabs-height: 42px;
-    --header-height: 0px;
-
-    --panel-bg-secondary-alpha: 1; 
-    --panel-bg-tertiary-alpha: 1;
-    --panel-bg-primary-alpha: 1; /* For inputs etc. if they use the darkest bg */
+    --overview-panel-height: 50px; /* Default/Simplified height, JS will update this */
+    --tabs-height: 42px; /* This might not be strictly needed if tabs height is natural */
 }
 
 html { box-sizing: border-box; }
@@ -146,7 +141,7 @@ h5 {
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow-dark);
     border: 1px solid var(--border-color-dark);
-    transition: background-color 0.2s ease-out; /* Transition for opacity change */
+    transition: background-color 0.2s ease-out; 
 }
 
 .input-with-suffix-wrapper {
@@ -183,12 +178,12 @@ h5 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    min-height: var(--overview-simplified-height);
+    /* min-height: var(--overview-simplified-height); /* Height will be natural or set by JS */
     padding: 10px 15px; 
     position: relative; 
     flex-shrink: 0; 
     border-bottom: 1px solid var(--border-color-dark); 
-    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha)); /* Ensure header also gets opacity */
+    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha)); 
     transition: background-color 0.2s ease-out;
 }
 
@@ -321,7 +316,7 @@ h5 {
     overflow-y: auto; 
     overflow-x: hidden; 
     -webkit-overflow-scrolling: touch; 
-    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha)); /* Ensure content area also gets opacity */
+    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha)); 
 }
 .overview-panel.simplified .overview-content {
     max-height: 0 !important; 
@@ -496,9 +491,9 @@ h5 {
 .character-tabs {
     display: flex;
     border-bottom: 2px solid var(--primary-accent-color);
-    margin-bottom: -1px;
+    margin-bottom: -1px; /* Overlap border with panel */
     position: sticky;
-    top: var(--overview-simplified-height); 
+    top: var(--overview-panel-height); /* JS will update this variable */
     background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
     z-index: 1000;
     padding: 0;
@@ -517,8 +512,7 @@ h5 {
 .tab-button {
     flex-grow: 1; 
     flex-basis: 0; 
-    flex-shrink: 1; 
-    min-width: 70px; 
+    /* min-width: 70px; /* Removed to allow full stretch */
     border: 1px solid transparent;
     border-bottom: none;
     cursor: pointer;
@@ -530,7 +524,7 @@ h5 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 8px; 
+    padding: 12px 5px; /* Adjusted padding */
     position: relative;
     white-space: nowrap; 
 }
@@ -682,21 +676,27 @@ h5 {
     color: var(--light-text-primary);
 }
 .skill-multiplier-item .selected-skill-label {
-    font-weight: bold;
+    font-weight: bold; /* Made bold */
     color: var(--primary-accent-color);
     font-size: 1.15em; 
     text-shadow: var(--text-shadow-accent); 
 }
 .skill-multiplier-item .alternate-skill-label {
-    color: var(--light-text-secondary);
+    color: var(--light-text-secondary); /* More greyish */
     font-style: italic;
     font-size: 0.9em; 
+    font-weight: normal; /* Ensure not bold */
 }
 .skill-multiplier-item input[type="radio"] {
     margin-right: 8px;
     transform: scale(1.2); 
     accent-color: var(--primary-accent-color);
 }
+.skill-multiplier-item input[type="radio"]:checked { /* Style for the selected radio button */
+    /* Modern browsers use accent-color. For older ones, more complex SVG might be needed. */
+    /* This is often sufficient with accent-color. */
+}
+
 
 .bonus-item .remove-bonus {
     padding: 6px 10px; 
@@ -774,10 +774,8 @@ h5 {
     box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
 }
 
-/* Combined Settings Footer */
 .settings-footer { 
     margin-top: 30px;
-    /* background-color set by .card which uses --panel-bg-secondary-alpha */
 }
 .settings-footer > h3 { 
     margin-bottom: 20px;
@@ -794,7 +792,7 @@ h5 {
     flex: 1;
     min-width: 280px; 
 }
-.config-management h4, .background-settings h4 { /* These are children of .settings-column */
+.config-management h4, .background-settings h4 { 
     margin-bottom: 15px;
 }
 
@@ -803,12 +801,11 @@ h5 {
     padding-top: 20px;
     margin-top: 20px;
 }
-.panel-transparency-settings h4 { /* This is a direct child of .panel-transparency-settings */
+.panel-transparency-settings h4 { 
      margin-bottom: 15px;
 }
 
 
-.background-settings-footer input[type="file"], /* Legacy selector, now part of .settings-footer */
 .settings-footer .background-settings input[type="file"] {
     padding: 10px;
     border: 1px dashed var(--primary-accent-color);
@@ -820,7 +817,6 @@ h5 {
     cursor: pointer;
     transition: background-color 0.2s ease-out;
 }
-.background-settings-footer input[type="file"]::file-selector-button,
 .settings-footer .background-settings input[type="file"]::file-selector-button {
     background-color: var(--primary-accent-color);
     color: var(--dark-bg-primary);
@@ -833,17 +829,16 @@ h5 {
     font-weight: bold;
 }
 
-.background-settings-footer input[type="range"], /* Legacy selector */
-.settings-footer .background-settings input[type="range"],
-.settings-footer .panel-transparency-settings input[type="range"] {
+.settings-footer input[type="range"] { /* General style for all range sliders in settings */
     width: 100%;
     cursor: pointer;
     accent-color: var(--primary-accent-color); 
 }
-/* Repeating range slider styles for all instances */
 .settings-footer input[type="range"]::-webkit-slider-runnable-track {
-  width: 100%; height: 8px; cursor: pointer; background: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
-  border-radius: 5px; border: 1px solid var(--border-color-dark); transition: background-color 0.2s ease-out;
+  width: 100%; height: 8px; cursor: pointer; 
+  background: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); /* Respects panel opacity */
+  border-radius: 5px; border: 1px solid var(--border-color-dark); 
+  transition: background-color 0.2s ease-out;
 }
 .settings-footer input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
@@ -869,10 +864,53 @@ h5 {
 .settings-footer .background-settings button#resetBackgroundButton:hover {
     background-color: var(--primary-accent-hover-color);
 }
-.settings-footer .export-group button,
-.settings-footer .import-group label /* These are for config management */
-{
-    /* Styles inherited or specifically set previously */
+.settings-footer .export-group button { /* Config export button */
+    padding: 12px 20px;
+    font-size: 1em;
+    background-color: var(--primary-accent-color);
+    color: var(--dark-bg-primary);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.settings-footer .export-group button:hover {
+    background-color: var(--primary-accent-hover-color);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+}
+.settings-footer .import-group label {
+    margin-bottom: 8px;
+    color: var(--light-text-primary);
+}
+.settings-footer .import-group input[type="file"] {
+    padding: 10px;
+    border: 1px dashed var(--primary-accent-color); 
+    border-radius: 4px;
+    width: 100%;
+    font-size: 0.95em;
+    margin-top: 5px;
+    background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
+    color: var(--light-text-secondary);
+    cursor: pointer;
+    transition: background-color 0.2s ease-out;
+}
+.settings-footer .import-group input[type="file"]::file-selector-button {
+    background-color: var(--primary-accent-color);
+    color: var(--dark-bg-primary);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.settings-footer p { /* Info text for import */
+    color: var(--light-text-secondary);
 }
 
 
@@ -895,7 +933,7 @@ h5 {
     .bonus-item .item-actions .trigger-label { order: 0;} 
     .bonus-item .item-actions .applies-to-group { width: auto; justify-content: center; }
 
-    .settings-footer-content { flex-direction: column; gap: 25px; } /* Stack columns earlier */
+    .settings-footer-content { flex-direction: column; gap: 25px; } 
     .simplified-char-info { flex-basis: auto; margin-right: 10px; }
     .simplified-final-damage { flex-basis: auto; margin-left:auto;}
 }
@@ -907,12 +945,10 @@ h5 {
     .overview-header { 
         min-height: 45px; 
     }
-    .character-tabs { 
-        top: var(--overview-simplified-height, 50px); 
-    } 
+    /* .character-tabs top value will be set by JS */
     .tab-button { 
-        min-width: 70px; 
-        padding: 10px 3px;
+        min-width: auto; /* Allow full flex shrink/grow on mobile */
+        padding: 10px 5px; /* Adjust padding */
     }
     .tab-char-name-display { font-size: 0.85em; }
 
@@ -961,11 +997,11 @@ h5 {
     .overview-grid { grid-template-columns: 1fr; }
     h3 { font-size: 1.1em; }
     h4 { font-size: 1.05em; }
+    .settings-footer h4 {font-size: 1.05em;}
     h5 { font-size: 1em; }
-    .settings-footer h4 { font-size: 1.05em; } /* Adjust h4 in settings for smallest screens */
     .simplified-triggers-group .checkbox-label { white-space: normal; } 
     .overview-toggle-btn { padding: 4px 6px; font-size: 1em; }
     .simplified-char-info { flex-direction: column; align-items: flex-start; }
     .simplified-final-damage { margin-left: 0; }
-    .tab-button { min-width: 60px; } 
+    /* .tab-button { min-width: 60px; }  Allow flex to fully manage on very small */
 }
