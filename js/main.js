@@ -178,17 +178,13 @@ function updateStickyTabsPosition() {
 
     if (overviewPanel && showcaseArea && characterTabs) {
         const overviewHeight = overviewPanel.offsetHeight;
-        // showcaseHeight is fixed by CSS var --background-showcase-height, but we can read it if we want
-        // For simplicity, directly use the CSS variable's value or a JS constant.
-        const showcaseHeightValue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--background-showcase-height')) || 350;
+        const showcaseHeightValue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--background-showcase-height').replace('px', '')) || 350;
         
         const tabsTopPosition = overviewHeight + showcaseHeightValue;
         characterTabs.style.top = `${tabsTopPosition}px`;
         
-        // Update the CSS variable that might be used by other elements for their own sticky positioning
-        // (though not strictly necessary if only tabs use this)
-        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`); // For individual overview height
-        document.documentElement.style.setProperty('--overview-plus-showcase-height', `${tabsTopPosition}px`); // For combined height
+        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`); 
+        // document.documentElement.style.setProperty('--overview-plus-showcase-height', `${tabsTopPosition}px`); // Not currently used by CSS but could be
     }
 }
 
@@ -205,7 +201,6 @@ function setupStickyTabsObserver() {
 
     observer.observe(overviewPanel);
     window.addEventListener('resize', updateStickyTabsPosition);
-    // If other dynamic height changes affect layout above tabs, observe those elements too.
 }
 
 
