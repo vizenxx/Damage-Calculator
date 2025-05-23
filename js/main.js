@@ -1,6 +1,24 @@
 // js/main.js
-// (Keep everything else the same as the previous complete version)
-// Only showing the modified handleGlobalNonPanelInput and populateSimplifiedTriggers
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        initApplication();
+        setupGlobalUITogglesAndInteractions();
+        setupSimplifiedExportImportListeners();
+        populateSimplifiedTriggers(); 
+        setupBackgroundControls(); 
+        setupPanelOpacityControls(); 
+        setupStickyTabsObserver(); 
+
+        if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
+           switchTab(0); 
+        } else { 
+            if (typeof updateOverviewPanel === 'function') updateOverviewPanel(activeCharacterIndex);
+        }
+    } catch (error) { 
+        console.error("Initialization Error:", error); 
+        alert("页面初始化时发生严重错误: " + error.message);
+    }
+});
 
 function populateSimplifiedTriggers() {
     const container = document.getElementById('simplifiedTriggersContainer');
@@ -12,7 +30,7 @@ function populateSimplifiedTriggers() {
         { id: 's_burst', label: '爆', fieldName: 'burstUp_isTriggered_QUICKVIEW', title: '爆裂UP' },
         { id: 's_sup', label: '优', fieldName: 'superiorityUp_isBaseTriggered_isTriggered_QUICKVIEW', title: '优越UP(基础)' },
         { id: 's_core', label: '核', fieldName: 'coreDamageBaseChoiceTriggered_isTriggered_QUICKVIEW', title: '核心伤触发' },
-        { id: 's_charge_trig', label: '蓄', fieldName: 'chargeUpBase_isTriggered_QUICKVIEW', title: '蓄力基础触发'} // Label changed
+        { id: 's_charge_trig', label: '蓄', fieldName: 'chargeUpBase_isTriggered_QUICKVIEW', title: '蓄力基础触发'}
     ];
 
     let html = '';
@@ -44,106 +62,6 @@ function populateSimplifiedTriggers() {
         simplifiedChargeSelect.addEventListener('change', handleGlobalNonPanelInput);
     }
 }
-
-
-function handleGlobalNonPanelInput(event) {
-    const target = event.target;
-    if (target.closest('.character-panel') || target.closest('.settings-footer')) return; 
-
-    // Fetch activeCharData based on the global activeCharacterIndex AT THE TIME OF THE EVENT
-    // This is crucial.
-    const currentActiveCharData = characters[window.activeCharacterIndex];
-
-    // console.log('handleGlobalNonPanelInput for target:', target.id, 'Active Char Index:', window.activeCharacterIndex, 'Char Name:', currentActiveCharData ? currentActiveCharData.name : 'N/A');
-
-
-    let needsRecalc = false;
-
-    if (target.id === 'enemyDefenseGlobal') {
-        enemy.defense = parseFloat(target.value) || 0;
-        needsRecalc = true;
-    } else if (target.id === 'enemyHasCoreGlobal') {
-        enemy.hasCore = target.checked;
-        needsRecalc = true;
-    } else {
-        const fieldName = target.dataset.fieldName;
-        if (fieldName && fieldName.endsWith('_QUICKVIEW')) {
-            if (!currentActiveCharData) {
-                // console.warn('No active character data found for quickview update.');
-                return; 
-            }
-
-            const baseFieldName = fieldName.replace('_QUICKVIEW', '');
-            // console.log('Processing QUICKVIEW field:', baseFieldName, 'for char index:', window.activeCharacterIndex);
-            
-            if (baseFieldName === 'critDamageUp_isTriggered') {
-                if(currentActiveCharData.critDamageUp) currentActiveCharData.critDamageUp.isTriggered = target.checked;
-            } else if (baseFieldName === 'distanceUp_isTriggered') {
-                if(currentActiveCharData.distanceUp) currentActiveCharData.distanceUp.isTriggered = target.checked;
-            } else if (baseFieldName === 'burstUp_isTriggered') {
-                if(currentActiveCharData.burstUp) currentActiveCharData.burstUp.isTriggered = target.checked;
-            } else if (baseFieldName === 'superiorityUp_isBaseTriggered_isTriggered') {
-                if (currentActiveCharData.superiorityUp) currentActiveCharData.superiorityUp.isBaseTriggered = target.checked;
-            } else if (baseFieldName === 'coreDamageBaseChoiceTriggered_isTriggered') {
-                currentActiveCharData.coreDamageBaseChoiceTriggered = target.checked;
-                if (target.checked && !enemy.hasCore) {
-                    enemy.hasCore = true;
-                    const enemyHasCoreEl = document.getElementById('enemyHasCoreGlobal');
-                    if (enemyHasCoreEl) enemyHasCoreEl.checked = true;
-                }
-            } else if (baseFieldName === 'coreDamageBaseChoice') {
-                currentActiveCharData.coreDamageBaseChoice = parseFloat(target.value);
-            } else if (baseFieldName === 'chargeUpBase_isTriggered') {
-                if (currentActiveCharData.chargeUpBase) currentActiveCharData.chargeUpBase.isTriggered = target.checked;
-            } else if (baseFieldName === 'chargeUpBase_value') {
-                if (currentActiveCharData.chargeUpBase) currentActiveCharData.chargeUpBase.value = parseFloat(target.value);
-            } else if (baseFieldName === 'attackCount') { 
-                currentActiveCharData.attackCount = parseFloat(target.value) || 1;
-            }
-            needsRecalc = true;
-            
-            // Sync between simplified and full overview (this part should remain the same)
-            if (target.id.includes('_simplified')) {
-                updateFullOverviewFromSimplified(baseFieldName, target.type === 'checkbox' ? target.checked : target.value);
-            } else {
-                updateSimplifiedTriggerFromFull(baseFieldName, target.type === 'checkbox' ? target.checked : target.value, target.type);
-            }
-        }
-    }
-
-    if (needsRecalc) {
-        recalculateAllCharacterDamages();
-    }
-}
-
-// THE REST OF main.js (initApplication, setupPanelOpacityControls, setupStickyTabsObserver, etc.)
-// REMAINS THE SAME AS THE PREVIOUS COMPLETE VERSION.
-// For brevity, I'm not pasting the entire file again, just ensure you merge this modified
-// populateSimplifiedTriggers and handleGlobalNonPanelInput into the existing complete main.js.
-
-// Full main.js for completeness:
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        initApplication();
-        setupGlobalUITogglesAndInteractions();
-        setupSimplifiedExportImportListeners();
-        populateSimplifiedTriggers(); 
-        setupBackgroundControls(); 
-        setupPanelOpacityControls(); 
-        setupStickyTabsObserver(); 
-
-        if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
-           switchTab(0); 
-        } else { 
-            if (typeof updateOverviewPanel === 'function') updateOverviewPanel(activeCharacterIndex);
-        }
-    } catch (error) { 
-        console.error("Initialization Error:", error); 
-        alert("页面初始化时发生严重错误: " + error.message);
-    }
-});
-
-// populateSimplifiedTriggers (modified above)
 
 function setupGlobalUITogglesAndInteractions() {
     const showTraceCheckbox = document.getElementById('showFormulaTraceGlobal');
@@ -254,14 +172,26 @@ function setupPanelOpacityControls() {
 }
 
 function updateStickyTabsPosition() {
-    const overviewPanel = document.getElementById('overviewPanel'); 
+    const overviewPanel = document.getElementById('overviewPanel');
+    const showcaseArea = document.getElementById('backgroundShowcaseArea');
     const characterTabs = document.getElementById('characterTabs');
-    if (overviewPanel && characterTabs) {
+
+    if (overviewPanel && showcaseArea && characterTabs) {
         const overviewHeight = overviewPanel.offsetHeight;
-        characterTabs.style.top = `${overviewHeight}px`;
-        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
+        // showcaseHeight is fixed by CSS var --background-showcase-height, but we can read it if we want
+        // For simplicity, directly use the CSS variable's value or a JS constant.
+        const showcaseHeightValue = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--background-showcase-height')) || 350;
+        
+        const tabsTopPosition = overviewHeight + showcaseHeightValue;
+        characterTabs.style.top = `${tabsTopPosition}px`;
+        
+        // Update the CSS variable that might be used by other elements for their own sticky positioning
+        // (though not strictly necessary if only tabs use this)
+        document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`); // For individual overview height
+        document.documentElement.style.setProperty('--overview-plus-showcase-height', `${tabsTopPosition}px`); // For combined height
     }
 }
+
 
 function setupStickyTabsObserver() {
     const overviewPanel = document.getElementById('overviewPanel');
@@ -270,12 +200,12 @@ function setupStickyTabsObserver() {
     updateStickyTabsPosition(); 
 
     const observer = new ResizeObserver(entries => {
-        for (let entry of entries) {
-            updateStickyTabsPosition();
-        }
+        updateStickyTabsPosition();
     });
 
     observer.observe(overviewPanel);
+    window.addEventListener('resize', updateStickyTabsPosition);
+    // If other dynamic height changes affect layout above tabs, observe those elements too.
 }
 
 
@@ -286,7 +216,7 @@ function initApplication() {
     if(enemyHasCoreEl) enemy.hasCore = enemyHasCoreEl.checked; else enemy.hasCore = true;
 
     const characterPanelsContainer = document.getElementById('character-panels-container');
-    const characterTabsContainer = document.querySelector('.character-tabs'); 
+    const characterTabsContainer = document.getElementById('characterTabs'); 
     if (!characterPanelsContainer || !characterTabsContainer) {
         alert("无法初始化角色面板，页面结构缺失！"); return;
     }
@@ -405,7 +335,67 @@ function handleCharacterPanelInput(event) {
     }
 }
 
-// handleGlobalNonPanelInput (modified above)
+function handleGlobalNonPanelInput(event) {
+    const target = event.target;
+    if (target.closest('.character-panel') || target.closest('.settings-footer')) return; 
+
+    const currentActiveCharData = characters[window.activeCharacterIndex];
+
+    let needsRecalc = false;
+
+    if (target.id === 'enemyDefenseGlobal') {
+        enemy.defense = parseFloat(target.value) || 0;
+        needsRecalc = true;
+    } else if (target.id === 'enemyHasCoreGlobal') {
+        enemy.hasCore = target.checked;
+        needsRecalc = true;
+    } else {
+        const fieldName = target.dataset.fieldName;
+        if (fieldName && fieldName.endsWith('_QUICKVIEW')) {
+            if (!currentActiveCharData) {
+                return; 
+            }
+
+            const baseFieldName = fieldName.replace('_QUICKVIEW', '');
+            
+            if (baseFieldName === 'critDamageUp_isTriggered') {
+                if(currentActiveCharData.critDamageUp) currentActiveCharData.critDamageUp.isTriggered = target.checked;
+            } else if (baseFieldName === 'distanceUp_isTriggered') {
+                if(currentActiveCharData.distanceUp) currentActiveCharData.distanceUp.isTriggered = target.checked;
+            } else if (baseFieldName === 'burstUp_isTriggered') {
+                if(currentActiveCharData.burstUp) currentActiveCharData.burstUp.isTriggered = target.checked;
+            } else if (baseFieldName === 'superiorityUp_isBaseTriggered_isTriggered') {
+                if (currentActiveCharData.superiorityUp) currentActiveCharData.superiorityUp.isBaseTriggered = target.checked;
+            } else if (baseFieldName === 'coreDamageBaseChoiceTriggered_isTriggered') {
+                currentActiveCharData.coreDamageBaseChoiceTriggered = target.checked;
+                if (target.checked && !enemy.hasCore) {
+                    enemy.hasCore = true;
+                    const enemyHasCoreEl = document.getElementById('enemyHasCoreGlobal');
+                    if (enemyHasCoreEl) enemyHasCoreEl.checked = true;
+                }
+            } else if (baseFieldName === 'coreDamageBaseChoice') {
+                currentActiveCharData.coreDamageBaseChoice = parseFloat(target.value);
+            } else if (baseFieldName === 'chargeUpBase_isTriggered') {
+                if (currentActiveCharData.chargeUpBase) currentActiveCharData.chargeUpBase.isTriggered = target.checked;
+            } else if (baseFieldName === 'chargeUpBase_value') {
+                if (currentActiveCharData.chargeUpBase) currentActiveCharData.chargeUpBase.value = parseFloat(target.value);
+            } else if (baseFieldName === 'attackCount') { 
+                currentActiveCharData.attackCount = parseFloat(target.value) || 1;
+            }
+            needsRecalc = true;
+            
+            if (target.id.includes('_simplified')) {
+                updateFullOverviewFromSimplified(baseFieldName, target.type === 'checkbox' ? target.checked : target.value);
+            } else {
+                updateSimplifiedTriggerFromFull(baseFieldName, target.type === 'checkbox' ? target.checked : target.value, target.type);
+            }
+        }
+    }
+
+    if (needsRecalc) {
+        recalculateAllCharacterDamages();
+    }
+}
 
 function updateSimplifiedTriggerFromFull(baseFieldName, value, inputType) {
     const map = {
