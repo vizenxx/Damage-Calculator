@@ -7,38 +7,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="background-layer" id="backgroundLayer"></div> {/* New: Background Image Layer */}
-
+    <div class="background-layer" id="backgroundLayer"></div> {/* Added for background image and gradient */}
     <div class="main-container">
-        {/* ... (all your existing .main-container content) ... */}
-        <div class="overview-panel card" id="overviewPanel">
-            {/* ... existing overview panel content ... */}
-        </div>
-
-        <div class="tabs-and-panels-container">
-            {/* ... existing tabs and panels ... */}
-        </div>
+        {/* ... All your existing .overview-panel, .tabs-and-panels-container, .io-section-footer ... */}
 
         <div class="io-section-footer card">
-            {/* ... existing IO section content ... */}
-        </div>
-
-        {/* New: Background Customization Section */}
-        <div class="background-customization-footer card">
-            <h3>背景设置</h3>
-            <div class="input-group">
-                <label for="backgroundImageUpload">选择背景图片:</label>
-                <input type="file" id="backgroundImageUpload" accept="image/*">
-            </div>
-            <div class="input-group">
-                <label for="backgroundOpacitySlider">背景透明度:</label>
-                <div class="slider-container">
-                    <input type="range" id="backgroundOpacitySlider" min="0" max="1" step="0.05" value="0.3">
-                    <span id="backgroundOpacityValue">0.3</span>
+            <h3>配置管理</h3>
+            <div class="io-section-content">
+                <div class="input-group export-group">
+                    <button type="button" id="exportConfigButton">导出配置</button>
+                </div>
+                <div class="input-group import-group">
+                    <label for="importConfigFile">导入配置:</label>
+                    <input type="file" id="importConfigFile" accept=".json">
                 </div>
             </div>
-             <button type="button" id="removeBackgroundButton">移除背景</button>
+            <p style="font-size: 0.85em; color: var(--light-text-secondary); margin-top: 10px;"><i>导入配置后，页面将使用文件中的数据刷新。请确保文件来源可靠。</i></p>
         </div>
+
+        {/* NEW BACKGROUND SETTINGS SECTION */}
+        <div class="background-settings-footer card">
+            <h3>背景设置</h3>
+            <div class="input-group">
+                <label for="backgroundImageInput">选择背景图片:</label>
+                <input type="file" id="backgroundImageInput" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label for="backgroundOpacitySlider">背景透明度: <span id="backgroundOpacityValue">100</span>%</label>
+                <input type="range" id="backgroundOpacitySlider" min="0" max="100" value="100">
+            </div>
+             <div class="input-group">
+                <button type="button" id="resetBackgroundButton">重置背景</button>
+            </div>
+        </div>
+        {/* END OF NEW BACKGROUND SETTINGS SECTION */}
+
     </div>
 
     <script src="js/config.js"></script>
@@ -49,7 +52,5 @@
     <script src="js/calculation.js"></script>
     <script src="js/io_handler.js"></script>
     <script src="js/main.js"></script>
-    {/* New: Background Script - ensure it's loaded after main.js or integrated into it */}
-    <script src="js/background_manager.js"></script> 
 </body>
 </html>
