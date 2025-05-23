@@ -25,9 +25,7 @@
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     
     --overview-panel-height: 50px; /* JS will update this based on actual overview panel height */
-    /* --background-showcase-height is now dynamic, set by JS */
     --dynamic-showcase-height: 350px; /* Default/fallback, JS will override */
-
 
     --panel-bg-primary-alpha: 1; 
     --panel-bg-secondary-alpha: 1; 
@@ -335,41 +333,20 @@ h5 {
 
 .background-showcase-area {
     height: var(--dynamic-showcase-height); /* Controlled by JS */
-    /* No position: sticky, no z-index, no ::before for gradient */
-    /* It's just a spacer now, its height affects padding of .main-scrollable-content */
     pointer-events: none; 
+    /* This is now just a spacer affecting the padding of main-scrollable-content */
 }
 
 .main-scrollable-content {
-    /* This container's top padding must account for overview panel AND showcase area */
     padding-top: calc(var(--overview-panel-height) + var(--dynamic-showcase-height));
     position: relative;
-    z-index: 10; /* Below overview (1002) */
-}
-
-.tabs-and-panels-container {
-    position: relative;
-    /* This container will have the mask for fading out content */
-    -webkit-mask-image: linear-gradient(to bottom, 
-        rgba(0,0,0,1) calc(100% - 100px - var(--dynamic-showcase-height)), /* Start fading above its bottom */
-        rgba(0,0,0,0) calc(100% - var(--dynamic-showcase-height)) /* Fully transparent at its bottom relative to showcase area */
-    );
-    mask-image: linear-gradient(to bottom, 
-        rgba(0,0,0,1) calc(100% - 100px - var(--dynamic-showcase-height)), 
-        rgba(0,0,0,0) calc(100% - var(--dynamic-showcase-height))
-    );
-    /* mask-image: linear-gradient(to top, transparent 0%, black 100px); */ /* simpler fade from top */
-    /* Alternative for panel fade:
-       The mask should be applied to character-panels-container, and its gradient should
-       be relative to the top of character-panels-container after tabs are sticky.
-       This is complex with dynamic heights. Let's try the simpler approach on tabs-and-panels-container first.
-    */
+    z-index: 10; /* Below overview-panel (1002) */
 }
 
 .character-tabs {
-    position: sticky; /* Will stick to the top of .main-scrollable-content's viewport area */
-    top: calc(var(--overview-panel-height) + var(--dynamic-showcase-height)); /* Stick below overview and showcase */
-    z-index: 100; /* Above other content in .main-scrollable-content, but below .overview-panel */
+    position: sticky;
+    top: var(--overview-panel-height); /* Stick directly below the overview panel */
+    z-index: 100; /* Above character-panels-container within .main-scrollable-content */
     
     display: flex;
     border-bottom: 2px solid var(--primary-accent-color);
@@ -382,6 +359,26 @@ h5 {
     -webkit-overflow-scrolling: touch; 
     scrollbar-width: thin; 
     scrollbar-color: var(--primary-accent-color) var(--dark-bg-secondary); 
+}
+
+#character-panels-container {
+    position: relative; /* Needed for z-index context if children need it, and for mask */
+    /* z-index: 1; /* Below character-tabs if they were siblings and both sticky/absolute */
+    /* Fade out content that scrolls "behind" the sticky tabs */
+    /* The mask makes the top Npx of this container (character panels) fade out */
+    /* Adjust 30px to control the fade height */
+    -webkit-mask-image: linear-gradient(to bottom, 
+        transparent 0%, /* Start transparent */
+        black 30px,    /* Fully opaque after 30px */
+        black 100%      /* Opaque till the end */
+    );
+    mask-image: linear-gradient(to bottom, 
+        transparent 0%, 
+        black 30px,    
+        black 100%
+    );
+    /* To ensure the mask has an "edge" to work from if panels are empty or have margin */
+    /* padding-top: 1px;  May not be needed if panels always have content at the top */
 }
 
 
@@ -603,23 +600,18 @@ h5 {
     transition: background-color 0.2s ease-out;
 }
 
-.tab-button.active {
+.character-tabs .tab-button.active {
     background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
     color: var(--primary-accent-color);
     border-top: 2px solid var(--primary-accent-color); 
     border-left: 1px solid var(--primary-accent-color);
     border-right: 1px solid var(--primary-accent-color);
-    /* margin-bottom: -2px; /* No longer needed if tabs are sticky inside scroll container */
-    /* padding-bottom: calc(12px + 2px); /* Not needed if margin-bottom is removed */
-
-    font-weight: 600; position: relative; 
-    /* z-index: 1; /* Relative to other tab buttons */
-    box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); 
-}
-/* Ensure active tab connects visually with character panel below */
-.character-tabs .tab-button.active {
     margin-bottom: -2px; /* Overlap the character-tabs bottom border */
     padding-bottom: calc(12px + 2px); /* Maintain visual height */
+    font-weight: 600; 
+    position: relative; 
+    z-index: 1; /* Ensure active tab is above inactive ones for border overlap */
+    box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); 
 }
 
 .tab-button.active:first-child { border-left: 2px solid var(--primary-accent-color); }
@@ -636,7 +628,7 @@ h5 {
     padding: 25px; 
     background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
     border: 1px solid var(--primary-accent-color); 
-    border-top: none; /* Important: to connect with tabs' bottom border */
+    border-top: none; 
     border-radius: 0 0 var(--border-radius) var(--border-radius);
     transition: background-color 0.2s ease-out;
 }
