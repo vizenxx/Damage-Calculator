@@ -101,9 +101,11 @@
         </div>
 
         <div class="main-scrollable-content">
-            <!-- tabs-and-panels-container is removed. Tabs and panels are direct children. -->
-            <div class="character-tabs" id="characterTabs">
-                <!-- Tabs will be populated by JS -->
+            <div class="character-tabs-wrapper"> <!-- New wrapper -->
+                <div class="character-tabs" id="characterTabs">
+                    <!-- Tabs will be populated by JS -->
+                </div>
+                <div class="tabs-fade-overlay"></div> <!-- New overlay for fade effect -->
             </div>
             <div id="character-panels-container">
                 <!-- Character panels will be populated by JS -->
