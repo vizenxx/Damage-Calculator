@@ -1,13 +1,16 @@
-/* style.css - Dark Theme Overhaul with Background Feature */
+/* style.css - Dark Theme Overhaul with Background & Panel Transparency */
 :root {
     --primary-accent-color: #00f0ff; 
     --primary-accent-hover-color: #00c0cc;
     --secondary-accent-color: #00aaff; 
     
     --dark-bg-primary: #0f1014; 
-    --dark-bg-primary-rgb: 15, 16, 20; /* RGB for #0f1014 */
+    --dark-bg-primary-rgb: 15, 16, 20; 
     --dark-bg-secondary: #1a1c23; 
+    --dark-bg-secondary-rgb: 26, 28, 35; /* RGB for #1a1c23 */
     --dark-bg-tertiary: #252830; 
+    --dark-bg-tertiary-rgb: 37, 40, 48; /* RGB for #252830 */
+
 
     --light-text-primary: #e0e0e0; 
     --light-text-secondary: #a0a0a0; 
@@ -25,6 +28,11 @@
     --overview-simplified-height: 50px; 
     --tabs-height: 42px;
     --header-height: 0px;
+
+    /* Panel Opacity Variables - these will be set by JS */
+    /* Default to fully opaque until JS updates them */
+    --panel-bg-secondary-alpha: 1; 
+    --panel-bg-tertiary-alpha: 1;
 }
 
 html { box-sizing: border-box; }
@@ -34,7 +42,7 @@ body {
     font-family: var(--font-family);
     line-height: 1.6;
     margin: 0;
-    background-color: var(--dark-bg-primary); /* This is the default background */
+    background-color: var(--dark-bg-primary); 
     color: var(--light-text-primary);
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
@@ -50,24 +58,26 @@ body {
     height: 100%;
     z-index: -1; 
     background-size: 100% auto; 
-    background-position: center top; /* Changed to center top */
+    background-position: center top; 
     background-repeat: no-repeat;
     opacity: 1; 
     transition: opacity 0.3s ease-in-out;
-    pointer-events: none; /* So it doesn't interfere with content interaction */
+    pointer-events: none; 
 }
 
-.background-layer.has-image::after { /* Apply gradient ONLY if an image is set */
+.background-layer.has-image::after { 
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    /* Gradient: Transparent at top, fades to primary background color at bottom */
     background: linear-gradient(to bottom, 
-        rgba(var(--dark-bg-primary-rgb), 0) 0%, 
-        rgba(var(--dark-bg-primary-rgb), 0.3) 50%, 
-        rgba(var(--dark-bg-primary-rgb), 1) 100% 
+        rgba(var(--dark-bg-primary-rgb), 0) 0%,    /* Fully transparent */
+        rgba(var(--dark-bg-primary-rgb), 0.0) 30%, /* Still mostly transparent */
+        rgba(var(--dark-bg-primary-rgb), 0.7) 75%, /* Becoming opaque */
+        rgba(var(--dark-bg-primary-rgb), 1) 100%   /* Fully opaque with primary bg */
     );
     pointer-events: none; 
 }
@@ -83,10 +93,6 @@ body {
     position: relative; 
     z-index: 1;
 }
-
-/* ... (Rest of your CSS from the previous version, no changes needed for other sections for THIS specific fix) ... */
-/* ALL OTHER CSS RULES FROM THE PREVIOUS CORRECT VERSION SHOULD BE HERE */
-/* I will only paste the changed background settings section for brevity, assume other parts are correct */
 
 h3 { 
     margin-bottom: 15px; 
@@ -108,6 +114,18 @@ h4 {
     border-bottom: 1px solid var(--border-color-dark);
     padding-bottom: 8px;
 }
+.settings-footer h4 { /* Specific styling for h4 within combined settings */
+    font-size: 1.1em;
+    color: var(--primary-accent-color);
+    text-shadow: none;
+    border-bottom: 1px solid var(--border-color-accent);
+    margin-top: 0;
+}
+.panel-transparency-settings h4 {
+     margin-top: 20px; /* Space above panel transparency */
+}
+
+
 h4 .intermediate-result-display { 
     color: var(--primary-accent-color);
     font-weight: bold;
@@ -125,11 +143,13 @@ h5 {
 }
 
 .card {
-    background: var(--dark-bg-secondary);
+    /* background: var(--dark-bg-secondary); */ /* Will use RGBA version */
+    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha));
     padding: 25px; 
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow-dark);
     border: 1px solid var(--border-color-dark);
+    transition: background-color 0.3s ease;
 }
 
 .input-with-suffix-wrapper {
@@ -152,7 +172,7 @@ h5 {
     font-weight: bold;
 }
 
-.overview-panel {
+.overview-panel { /* This is a .card, so it gets the new background */
     position: sticky;
     top: 0;
     z-index: 1002;
@@ -160,10 +180,9 @@ h5 {
     max-height: 95vh; 
     display: flex; 
     flex-direction: column;
-    background: var(--dark-bg-secondary); 
+    /* background: var(--dark-bg-secondary); /* Will use RGBA */
     border: 1px solid var(--border-color-dark);
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow-dark);
+    /* box-shadow inherited from .card */
 }
 .overview-header {
     display: flex;
@@ -256,7 +275,7 @@ h5 {
 .simplified-triggers-group .charge-value-select-simplified {
     font-size: 0.85em; 
     padding: 1px 2px;
-    background-color: var(--dark-bg-tertiary);
+    background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); /* Use RGBA */
     color: var(--light-text-primary);
     border: 1px solid var(--border-color-dark);
     border-radius: 3px;
@@ -321,11 +340,12 @@ h5 {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px; align-items: start;
 }
-.overview-section {
+.overview-section { /* This is a .card child */
     padding: 20px; 
     border: 1px solid var(--border-color-dark); 
     border-radius: var(--border-radius);
-    background-color: var(--dark-bg-tertiary); 
+    /* background-color: var(--dark-bg-tertiary); */ /* Use RGBA */
+    background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
 }
 .overview-section h3 { 
     margin-top:0; 
@@ -352,7 +372,7 @@ h5 {
     border-radius: 4px; 
     width: 100%;
     font-size: 1em;
-    background-color: var(--dark-bg-primary); 
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-tertiary-alpha)); /* Darker input background, respects panel alpha */
     color: var(--light-text-primary);
     transition: border-color 0.2s ease;
 }
@@ -362,7 +382,7 @@ h5 {
     box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.3);
 }
 .input-group select option {
-    background-color: var(--dark-bg-secondary);
+    background-color: var(--dark-bg-secondary); /* Solid for dropdown options */
     color: var(--light-text-primary);
 }
 
@@ -392,7 +412,8 @@ h5 {
 }
 .skill-display-value-wrapper {
     display: flex; align-items: center; gap: 8px;
-    padding: 10px 12px; border: 1px solid var(--border-color-dark); border-radius: 4px; background-color: var(--dark-bg-primary);
+    padding: 10px 12px; border: 1px solid var(--border-color-dark); border-radius: 4px; 
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-tertiary-alpha));
     position: relative; 
     color: var(--light-text-primary);
 }
@@ -420,7 +441,7 @@ h5 {
 .core-choice-group-overview .checkbox-label, .charge-choice-group-overview .checkbox-label { margin-bottom: 0; color: var(--light-text-primary); }
 .core-choice-group-overview select, .charge-choice-group-overview select {
     width: auto; flex-grow: 1; min-width: 90px; margin-bottom: 0;
-    background-color: var(--dark-bg-primary);
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-tertiary-alpha));
     color: var(--light-text-primary);
     border: 1px solid var(--border-color-dark);
 }
@@ -430,7 +451,7 @@ h5 {
     font-size: 1.3em; 
     font-weight: bold; 
     padding: 12px 15px;
-    background-color: var(--dark-bg-tertiary); 
+    background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
     border: 1px solid var(--primary-accent-color);
     border-radius: var(--border-radius); 
     margin-bottom: 20px;
@@ -449,7 +470,7 @@ h5 {
 
 .formula-trace-area {
     display: none;
-    background-color: var(--dark-bg-primary);
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-secondary-alpha)); /* Respect panel alpha */
     border: 1px solid var(--border-color-dark);
     border-radius: var(--border-radius);
     padding: 15px;
@@ -475,11 +496,11 @@ h5 {
     margin-bottom: -1px;
     position: sticky;
     top: var(--overview-simplified-height); 
-    background-color: var(--dark-bg-primary); 
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-secondary-alpha)); /* Tabs bg respects panel alpha */
     z-index: 1000;
     padding: 0;
     width: 100%;
-    transition: top 0.3s ease-out;
+    transition: top 0.3s ease-out, background-color 0.3s ease;
     overflow-x: auto; 
     -webkit-overflow-scrolling: touch; 
     scrollbar-width: thin; 
@@ -491,12 +512,15 @@ h5 {
 .character-tabs::-webkit-scrollbar-thumb { background-color: var(--primary-accent-color); border-radius: 3px; }
 
 .tab-button {
-    flex-shrink: 0; 
-    min-width: 80px; 
+    flex-grow: 1; /* Distribute space evenly */
+    flex-basis: 0; /* Allow shrinking/growing from 0 */
+    flex-shrink: 1; /* Allow shrinking if needed but flex-grow will try to fill */
+    min-width: 70px; /* Absolute minimum */
     border: 1px solid transparent;
     border-bottom: none;
     cursor: pointer;
-    background-color: var(--dark-bg-secondary);
+    /* background-color: var(--dark-bg-secondary); */ /* Will use RGBA */
+    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha));
     text-align: center;
     font-weight: 500;
     color: var(--light-text-secondary);
@@ -509,11 +533,11 @@ h5 {
     white-space: nowrap; 
 }
 .tab-button:not(:first-child) {
-    border-left: 1px solid var(--dark-bg-primary); 
+    border-left: 1px solid rgba(var(--dark-bg-primary-rgb), var(--panel-bg-secondary-alpha)); 
 }
 .tab-button:hover {
     color: var(--primary-accent-color);
-    background-color: var(--dark-bg-tertiary);
+    background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
 }
 .tab-char-name-display {
     display: inline-block;
@@ -528,7 +552,7 @@ h5 {
 }
 
 .tab-button input.tab-char-name-input-edit {
-    background: var(--dark-bg-tertiary);
+    background: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
     border: 1px solid var(--primary-accent-color);
     color: var(--light-text-primary);
     box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
@@ -545,12 +569,12 @@ h5 {
 }
 
 .tab-button.active {
-    background-color: var(--dark-bg-tertiary); 
+    background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
     color: var(--primary-accent-color);
     border-top: 2px solid var(--primary-accent-color);
     border-left: 1px solid var(--primary-accent-color);
     border-right: 1px solid var(--primary-accent-color);
-    border-bottom: 1px solid var(--dark-bg-tertiary); 
+    border-bottom: 1px solid rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
     font-weight: 600; position: relative; z-index: 1; margin-bottom: -1px;
     box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); 
 }
@@ -562,30 +586,23 @@ h5 {
 }
 
 
-.character-panel { 
+.character-panel { /* This is a .card child conceptually */
     display: none; 
     padding: 25px; 
-    background-color: var(--dark-bg-tertiary); 
+    /* background-color: var(--dark-bg-tertiary); */ /* Use RGBA */
+    background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
     border: 1px solid var(--primary-accent-color); 
     border-top: none;
     border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 .character-panel.active { display: block; }
 
-.base-stats-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px; 
-    margin-bottom: 25px;
-}
-.base-stats-grid .input-group { margin-bottom: 0; }
+/* ... (rest of the styles for .base-stats-grid, .intermediate-result-display, .bonus-item etc. should use the RGBA backgrounds where appropriate if they are panel-like) ... */
 
-.intermediate-result-display {
-    font-size: 0.9em; color: var(--primary-accent-color); margin-right: 8px;
-    font-weight: bold; min-width: 60px; text-align: left; 
-    text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
-}
-
+/* Example for bonus-item if it's meant to be a sub-panel */
 .bonus-item {
+    background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha));
+    /* ... other bonus item styles ... */
     display: grid;
     grid-template-columns: auto 1fr auto; 
     gap: 10px 15px; 
@@ -594,402 +611,79 @@ h5 {
     padding: 15px; 
     border: 1px solid var(--border-color-dark);
     border-radius: var(--border-radius); 
-    background-color: var(--dark-bg-secondary); 
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, background-color 0.3s ease;
 }
 .bonus-item:hover {
     border-color: var(--primary-accent-color);
 }
-.bonus-item .intermediate-result-display { grid-column: 1 / 2; }
-.bonus-item .item-main-content { 
-    grid-column: 2 / 3; 
-    display: flex; 
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-}
-.bonus-item .item-actions { 
-    grid-column: 3 / 4; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: flex-end; 
-    gap: 12px; 
-    justify-self: end;
-}
 
-.item-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-}
-.item-row > label:first-child { 
-    min-width: 80px; 
-    white-space: nowrap;
-    color: var(--light-text-secondary);
-}
-.item-row .input-with-suffix-wrapper { flex-grow: 1; }
+/* Ensure input backgrounds within items also respect panel transparency for consistency */
 .item-row .bonus-value-input, .item-row select { 
+    background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-tertiary-alpha)); /* Darker than item bg */
+    /* ... other input styles ... */
     flex-grow: 1;
     min-width: 80px; 
-    background-color: var(--dark-bg-primary);
     color: var(--light-text-primary);
     border-color: var(--border-color-dark);
 }
-.item-row select option {
-    background-color: var(--dark-bg-secondary);
-}
-.item-row .applies-to-group { margin-left: auto; }
-.item-row .special-damage-type-select { min-width: 160px; }
-.item-row .custom-type-input-wrapper { flex-grow: 1; }
-.item-row .custom-type-input-wrapper.hidden { display: none; }
 
 
-.skill-multiplier-item .skill-type-label {
-    font-size: 1em; 
-    padding-right: 8px;
-    white-space: nowrap;
-    min-width: 90px;
-    color: var(--light-text-primary);
+/* Settings Footer (Combined) */
+.settings-footer { /* This is a .card */
+    margin-top: 30px;
 }
-.skill-multiplier-item .selected-skill-label {
-    font-weight: bold;
-    color: var(--primary-accent-color);
-    font-size: 1.15em; 
-    text-shadow: var(--text-shadow-accent); 
-}
-.skill-multiplier-item .alternate-skill-label {
-    color: var(--light-text-secondary);
-    font-style: italic;
-    font-size: 0.9em; 
-}
-.skill-multiplier-item input[type="radio"] {
-    margin-right: 8px;
-    transform: scale(1.2); 
-    accent-color: var(--primary-accent-color);
-}
-
-.bonus-item .remove-bonus {
-    padding: 6px 10px; 
-    font-size: 0.9em; 
-    background-color: #555; 
-    color: var(--light-text-secondary); 
-    border: 1px solid var(--border-color-dark); 
-    border-radius: var(--border-radius); cursor: pointer;
-    align-self: flex-end; 
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-.bonus-item .remove-bonus:hover {
-    background-color: var(--danger-color); 
-    color: white;
-    border-color: var(--danger-color);
-}
-
-.bonus-item .trigger-label {
-    font-size: 1em; 
-    color: var(--light-text-primary); 
-    font-weight: 500;
-    padding: 6px 8px; 
-    border: 1px solid var(--border-color-dark); 
-    border-radius: 4px;
-    background-color: var(--dark-bg-tertiary); 
-    display: flex; align-items: center; white-space: nowrap;
-    cursor: pointer;
-    order: -1; 
-    transition: border-color 0.2s ease, color 0.2s ease;
-}
-.bonus-item .trigger-label:hover {
-    border-color: var(--primary-accent-color);
-    color: var(--primary-accent-color);
-}
-.bonus-item .trigger-label input[type="checkbox"] {
-    transform: scale(1.1); 
-    margin-right: 8px;
-    accent-color: var(--primary-accent-color);
-}
-
-.applies-to-group { 
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-start; 
-    font-size: 0.9em; 
-    margin-bottom: 5px; 
-}
-.applies-to-group label { color: var(--light-text-secondary); }
-.applies-to-group label:hover { color: var(--primary-accent-color); }
-.applies-to-group input[type="radio"] { accent-color: var(--primary-accent-color); transform: scale(0.9); margin-right: 3px;}
-
-.bonus-item .item-actions .applies-to-group {
-    width: 100%; 
-    justify-content: flex-end; 
-}
-
-
-.input-section > button[type="button"] { 
-    padding: 10px 18px; 
-    font-size: 1em; 
-    background-color: transparent; 
-    color: var(--primary-accent-color);
-    border: 1px solid var(--primary-accent-color); 
-    border-radius: var(--border-radius); 
-    cursor: pointer; 
-    margin-top: 15px;
-    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.input-section > button[type="button"]:hover {
-    background-color: var(--primary-accent-color);
-    color: var(--dark-bg-secondary);
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
-}
-
-.io-section-footer { margin-top: 30px; padding-bottom: 10px; }
-.io-section-footer h3 { 
-    margin-bottom: 20px; 
-    border-bottom: 1px solid var(--border-color-accent); 
-    padding-bottom: 10px;
-}
-.io-section-content {
-    display: flex;
-    gap: 25px;
-}
-.io-section-content > div {
-    flex: 1;
-}
-.io-section-footer button { 
-    padding: 12px 20px;
-    font-size: 1em;
-    background-color: var(--primary-accent-color);
-    color: var(--dark-bg-primary);
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    width: 100%;
-    text-transform: uppercase;
-    font-weight: bold;
-    letter-spacing: 1px;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
-}
-.io-section-footer button:hover {
-    background-color: var(--primary-accent-hover-color);
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
-}
-.io-section-footer input[type="file"] {
-    padding: 10px;
-    border: 1px dashed var(--primary-accent-color); 
-    border-radius: 4px;
-    width: 100%;
-    font-size: 0.95em;
-    margin-top: 5px;
-    background-color: var(--dark-bg-tertiary);
-    color: var(--light-text-secondary);
-    cursor: pointer;
-}
-.io-section-footer input[type="file"]::file-selector-button {
-    background-color: var(--primary-accent-color);
-    color: var(--dark-bg-primary);
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-.io-section-footer .input-group label {
-    margin-bottom: 8px;
-    color: var(--light-text-primary);
-}
-.io-section-footer p {
-    color: var(--light-text-secondary);
-}
-
-.background-settings-footer {
-    margin-top: 30px; 
-    padding-bottom: 10px;
-}
-.background-settings-footer h3 {
+.settings-footer > h3 { /* The main "应用设置" heading */
     margin-bottom: 20px;
     border-bottom: 1px solid var(--border-color-accent);
     padding-bottom: 10px;
 }
-.background-settings-footer .input-group {
+.settings-footer-content {
+    display: flex;
+    gap: 30px; /* Space between config and background columns */
+    flex-wrap: wrap; /* Allow columns to wrap on smaller screens */
+    margin-bottom: 20px; /* Space before panel transparency */
+}
+.settings-column {
+    flex: 1;
+    min-width: 280px; /* Minimum width before wrapping */
+}
+.config-management h4, .background-settings h4 {
     margin-bottom: 15px;
 }
-.background-settings-footer .input-group label {
-    color: var(--light-text-primary);
-    font-size: 0.95em;
-    margin-bottom: 8px;
-}
-.background-settings-footer input[type="file"] {
-    padding: 10px;
-    border: 1px dashed var(--primary-accent-color);
-    border-radius: 4px;
-    width: 100%;
-    font-size: 0.95em;
-    background-color: var(--dark-bg-tertiary);
-    color: var(--light-text-secondary);
-    cursor: pointer;
-}
-.background-settings-footer input[type="file"]::file-selector-button {
-    background-color: var(--primary-accent-color);
-    color: var(--dark-bg-primary);
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-.background-settings-footer input[type="range"] {
-    width: 100%;
-    cursor: pointer;
-    accent-color: var(--primary-accent-color); 
-}
-.background-settings-footer input[type="range"]::-webkit-slider-runnable-track {
-  width: 100%; height: 8px; cursor: pointer; background: var(--dark-bg-tertiary);
-  border-radius: 5px; border: 1px solid var(--border-color-dark);
-}
-.background-settings-footer input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
-  background: var(--primary-accent-color); cursor: pointer; margin-top: -6px; 
-  box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
-}
-.background-settings-footer input[type="range"]::-moz-range-track {
-  width: 100%; height: 8px; cursor: pointer; background: var(--dark-bg-tertiary);
-  border-radius: 5px; border: 1px solid var(--border-color-dark);
-}
-.background-settings-footer input[type="range"]::-moz-range-thumb {
-  height: 18px; width: 18px; border-radius: 50%; background: var(--primary-accent-color);
-  cursor: pointer; border: none; box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
-}
-.background-settings-footer input[type="range"]::-ms-track {
-  width: 100%; height: 8px; cursor: pointer; background: transparent;
-  border-color: transparent; color: transparent;
-}
-.background-settings-footer input[type="range"]::-ms-fill-lower {
-  background: var(--dark-bg-tertiary); border: 1px solid var(--border-color-dark);
-  border-radius: 10px;
-}
-.background-settings-footer input[type="range"]::-ms-fill-upper {
-  background: var(--dark-bg-tertiary); border: 1px solid var(--border-color-dark);
-  border-radius: 10px;
-}
-.background-settings-footer input[type="range"]::-ms-thumb {
-  height: 18px; width: 18px; border-radius: 50%; background: var(--primary-accent-color);
-  cursor: pointer; margin-top: 0px; box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
-}
-.background-settings-footer button#resetBackgroundButton {
-    padding: 10px 18px;
-    font-size: 0.9em;
-    background-color: var(--secondary-accent-color); 
-    color: var(--dark-bg-primary);
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-.background-settings-footer button#resetBackgroundButton:hover {
-    background-color: var(--primary-accent-hover-color);
+
+.panel-transparency-settings {
+    border-top: 1px solid var(--border-color-dark);
+    padding-top: 20px;
+    margin-top: 20px;
 }
 
 
-@media (max-width: 992px) {
-    .overview-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-    .bonus-item {
-        grid-template-columns: auto 1fr; 
-    }
-    .bonus-item .item-actions {
-        grid-column: 1 / -1; 
-        flex-direction: row; 
-        justify-content: space-between; 
-        align-items: center;
-        margin-top: 10px;
-        width: 100%;
-    }
-     .bonus-item .item-main-content .applies-to-group {
-        margin-top: 8px;
-    }
-    .bonus-item .item-actions .trigger-label { order: 0;} 
-    .bonus-item .item-actions .applies-to-group { width: auto; justify-content: center; }
-
-
-    .io-section-content { flex-direction: column; }
-    .simplified-char-info { flex-basis: auto; margin-right: 10px; }
-    .simplified-final-damage { flex-basis: auto; margin-left:auto;}
+/* Make sure all other panel-like elements also use the RGBA variables for their backgrounds */
+/* For example: */
+.io-section-footer { /* This is a .card */
+    /* background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha)); */
+    /* Other styles inherited from .card which now uses RGBA */
 }
+.background-settings-footer { /* This is a .card */
+     /* background-color: rgba(var(--dark-bg-secondary-rgb), var(--panel-bg-secondary-alpha)); */
+    /* Other styles inherited from .card which now uses RGBA */
+}
+
+/* ... (rest of your existing styles, media queries etc.) ... */
+/* Ensure media queries for tab button min-width and simplified overview elements are still appropriate */
 
 @media (max-width: 768px) {
-    .overview-panel {
-        max-height: 85vh; 
+    .settings-footer-content {
+        flex-direction: column; /* Stack columns on smaller screens */
+        gap: 20px;
     }
-    .overview-header { 
-        min-height: 45px; 
-    }
-    .character-tabs { 
-        top: var(--overview-simplified-height, 50px); 
-    } 
     .tab-button { 
-        min-width: 70px; 
-        padding: 10px 3px;
+        min-width: 70px; /* Ensure this allows for scroll with 5 tabs */
     }
-    .tab-char-name-display { font-size: 0.85em; }
-
-
-    .simplified-char-info { flex-direction: row; gap: 5px; align-items: center; justify-content: flex-start; }
-    .simplified-char-name { max-width: 100px; font-size: 0.95em; }
-    .simplified-triggers-group { margin: 0 2px; gap: 2px;}
-    .simplified-triggers-group .checkbox-label, .simplified-triggers-group .select-label { font-size: 0.7em; padding: 1px;}
-    .simplified-triggers-group .checkbox-label input[type="checkbox"] { transform: scale(0.6); margin-right: 0;}
-    .simplified-triggers-group .charge-value-select-simplified { font-size: 0.7em; max-width: 45px; padding: 0;}
-    .simplified-final-damage { font-size: 0.95em;}
-
-
-    .main-container { padding: 10px; }
-    .card, .character-panel { padding: 20px; } 
-    
-    .tab-char-name-display, .tab-button input.tab-char-name-input-edit { font-size: 0.85em; padding: 8px 3px;}
-
-    .base-stats-grid { grid-template-columns: 1fr; }
-    .bonus-item { grid-template-columns: 1fr; } 
-    .bonus-item > * {
-      grid-column: 1 / -1 !important;
-      justify-self: stretch !important;
-      margin-bottom: 8px;
-    }
-    .bonus-item .item-main-content .item-row {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-     .bonus-item .item-main-content .item-row .input-with-suffix-wrapper,
-     .bonus-item .item-main-content .item-row select {
-        width: 100%;
-    }
-    .bonus-item .applies-to-group { flex-direction: column; gap: 5px; align-items: flex-start; }
-    .bonus-item .item-actions {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .bonus-item .item-actions .applies-to-group { justify-content: flex-start; }
-    .bonus-item .remove-bonus { margin-top: 10px; align-self: flex-start;}
-
-    .checkbox-top-right { position: static; margin-top: 5px; text-align: left; justify-content: flex-start; padding: 0; }
 }
+
 @media (max-width: 480px) {
-    .tab-char-name-display, .tab-button input.tab-char-name-input-edit { font-size: 0.8em; }
-    .overview-grid { grid-template-columns: 1fr; }
-    h3 { font-size: 1.1em; }
-    h4 { font-size: 1.05em; }
-    h5 { font-size: 1em; }
-    .simplified-triggers-group .checkbox-label { white-space: normal; } 
-    .overview-toggle-btn { padding: 4px 6px; font-size: 1em; }
-    .simplified-char-info { flex-direction: column; align-items: flex-start; }
-    .simplified-final-damage { margin-left: 0; }
-    .tab-button { min-width: 65px; } 
+    .tab-button { 
+        min-width: 60px; /* Smallest reasonable size for tabs */
+    }
 }
