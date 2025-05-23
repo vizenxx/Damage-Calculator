@@ -115,8 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
         populateSimplifiedTriggers(); 
         setupBackgroundControls(); 
         setupPanelOpacityControls(); 
-        setupResponsiveShowcaseHeight();
-        setupStickyTabsObserver();
+        setupResponsiveShowcaseHeight(); // Sets up dynamic height for showcase area
+        setupStickyTabsObserver(); // Sets up overview panel height var and calls showcase height update
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -144,7 +144,7 @@ function setupGlobalUITogglesAndInteractions() {
     const toggleOverviewBtn = document.getElementById('toggleOverviewBtn');
     const overviewPanel = document.getElementById('overviewPanel');
     if (toggleOverviewBtn && overviewPanel) {
-        overviewPanel.classList.remove('simplified');
+        overviewPanel.classList.remove('simplified'); // Start expanded
         toggleOverviewBtn.textContent = '▲';
         toggleOverviewBtn.setAttribute('aria-label', '收起概览');
 
@@ -155,8 +155,8 @@ function setupGlobalUITogglesAndInteractions() {
             // Wait for animation/transition to complete before updating heights
             setTimeout(() => {
                 updateOverviewPanelHeightVar(); 
-                updateShowcaseHeight(); 
-            }, 50); // Adjust timeout if needed
+                updateShowcaseHeight(); // Ensure showcase height is also updated
+            }, 50); // Adjust timeout if animation is longer
         });
     }
 }
@@ -238,15 +238,14 @@ function setupPanelOpacityControls() {
         panelOpacitySlider.addEventListener('input', (event) => {
             applyOpacity(event.target.value);
         });
-        applyOpacity(panelOpacitySlider.value);
+        applyOpacity(panelOpacitySlider.value); // Initialize
     }
 }
 
 function updateOverviewPanelHeightVar() {
     const overviewPanel = document.getElementById('overviewPanel'); 
     if (overviewPanel) {
-        // Request animation frame to get height after layout changes
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() => { // Use rAF to get height after layout changes
             const overviewHeight = overviewPanel.offsetHeight;
             document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
         });
@@ -255,32 +254,34 @@ function updateOverviewPanelHeightVar() {
 
 function updateShowcaseHeight() {
     const mainContainer = document.querySelector('.main-container');
-    const showcaseArea = document.getElementById('backgroundShowcaseArea');
-    if (!mainContainer || !showcaseArea) return;
+    // const showcaseArea = document.getElementById('backgroundShowcaseArea'); // Not directly manipulating its style
+    if (!mainContainer) return;
 
-    // Use clientWidth for content width, or offsetWidth if padding/border should be included
     const containerWidth = mainContainer.clientWidth; 
     let newHeight;
 
-    // Make sure window.innerWidth is reliable, or use a media query match if available
     if (window.matchMedia("(max-width: 768px)").matches) { 
-        newHeight = containerWidth * (2 / 3);
+        newHeight = containerWidth * (2 / 3); // 2/3 for narrow screens
     } else { 
-        newHeight = containerWidth * (1 / 3);
+        newHeight = containerWidth * (1 / 3); // 1/3 for wide screens
     }
-    newHeight = Math.max(100, Math.min(newHeight, 350)); // Adjusted Min/Max heights
+    newHeight = Math.max(100, Math.min(newHeight, 350)); // Clamp height between 100px and 350px
     
     document.documentElement.style.setProperty('--dynamic-showcase-height', `${newHeight}px`);
-    // showcaseArea.style.height = `${newHeight}px`; // No longer directly setting height if it's just a CSS var user
 }
 
 function setupResponsiveShowcaseHeight() {
-    updateShowcaseHeight(); 
+    updateShowcaseHeight(); // Initial call
     window.addEventListener('resize', updateShowcaseHeight);
 
+    // Observe .main-container for size changes that are not window resizes
     const mainContainer = document.querySelector('.main-container');
     if (mainContainer) {
-        const resizeObserver = new ResizeObserver(updateShowcaseHeight);
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) { // Though we only observe one element
+                updateShowcaseHeight();
+            }
+        });
         resizeObserver.observe(mainContainer);
     }
 }
@@ -290,12 +291,12 @@ function setupStickyTabsObserver() {
     const overviewPanel = document.getElementById('overviewPanel');
     if (!overviewPanel) return;
 
-    updateOverviewPanelHeightVar(); 
+    updateOverviewPanelHeightVar(); // Initial call
 
     const observer = new ResizeObserver(entries => {
         for (let entry of entries) {
-            updateOverviewPanelHeightVar();
-            updateShowcaseHeight(); 
+            updateOverviewPanelHeightVar(); // Update overview panel height variable
+            updateShowcaseHeight(); // Also update showcase height as layout might shift
         }
     });
     observer.observe(overviewPanel);
