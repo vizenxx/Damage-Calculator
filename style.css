@@ -24,7 +24,7 @@
     --border-radius: 6px;
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     
-    --overview-panel-height: 50px; /* JS will update this */
+    --overview-panel-height: 50px; 
     --background-showcase-height: 350px; 
     --tabs-and-panels-sticky-top: calc(var(--overview-panel-height) + var(--background-showcase-height));
 
@@ -86,9 +86,9 @@ body {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 0; 
+    gap: 0; /* Spacing managed by elements themselves or specific containers */
     position: relative; 
-    z-index: 1;
+    z-index: 1; /* Content above background layer */
 }
 
 h3 { 
@@ -111,12 +111,12 @@ h4 {
     border-bottom: 1px solid var(--border-color-dark);
     padding-bottom: 8px;
 }
-.settings-footer h4 { 
+.settings-footer h4 { /* Specific styling for h4 within combined settings */
     font-size: 1.1em;
     color: var(--primary-accent-color);
     text-shadow: none;
     border-bottom: 1px solid var(--border-color-accent);
-    margin-top: 0;
+    margin-top: 0; /* Reset top margin if it's the first child */
 }
 .panel-transparency-settings h4 {
      margin-top: 20px; 
@@ -146,7 +146,16 @@ h5 {
     box-shadow: var(--card-shadow-dark);
     border: 1px solid var(--border-color-dark);
     transition: background-color 0.2s ease-out; 
+    margin-bottom: 20px; /* Default spacing for cards */
 }
+.overview-panel.card {
+    margin-bottom: 0; /* Overview panel spacing handled by showcase area */
+}
+.settings-footer.card {
+    margin-top: 20px; /* Explicit top margin for settings footer */
+    margin-bottom: 0; /* Usually last element */
+}
+
 
 .input-with-suffix-wrapper {
     position: relative;
@@ -171,7 +180,7 @@ h5 {
 .overview-panel { 
     position: sticky;
     top: 0; 
-    z-index: 1002; 
+    z-index: 1002; /* Highest among scrolling/sticky elements */
     max-height: 95vh; 
     display: flex; 
     flex-direction: column;
@@ -334,7 +343,7 @@ h5 {
 .background-showcase-area {
     height: var(--background-showcase-height);
     position: relative; 
-    z-index: 999; /* Above tabs/panels, below overview */
+    z-index: 1000; /* Higher than tabsAndPanelsContainer, below overviewPanel */
     pointer-events: none; 
 }
 
@@ -351,24 +360,25 @@ h5 {
         rgba(var(--dark-bg-primary-rgb), 0.7) 30%,    
         rgba(var(--dark-bg-primary-rgb), 0) 100%      
     );
-    z-index: 1; 
+    z-index: 1; /* This pseudo-element is part of showcase area, above its "non-content" */
+    /* pointer-events: none; /* Inherited */
 }
 
 
 .tabs-and-panels-container {
     position: sticky; 
     top: var(--tabs-and-panels-sticky-top); 
-    z-index: 990; /* Below showcase area gradient */
+    z-index: 990; /* Below showcase area's gradient, above normal page flow that's not sticky */
 }
 
 .character-tabs {
     display: flex;
     border-bottom: 2px solid var(--primary-accent-color);
     background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
-    z-index: 2; /* Above character-panels-container within this sticky block */
+    z-index: 2; 
     padding: 0;
     width: 100%;
-    transition: background-color 0.2s ease-out; /* Removed top transition as parent handles sticky */
+    transition: background-color 0.2s ease-out;
     overflow-x: auto; 
     -webkit-overflow-scrolling: touch; 
     scrollbar-width: thin; 
@@ -601,7 +611,7 @@ h5 {
     border-left: 1px solid var(--primary-accent-color);
     border-right: 1px solid var(--primary-accent-color);
     border-bottom: 1px solid rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
-    font-weight: 600; position: relative; z-index: 1; /* margin-bottom: -1px; /* Not needed with parent sticky */
+    font-weight: 600; position: relative; z-index: 1; margin-bottom: -1px;
     box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); 
 }
 .tab-button.active:first-child { border-left: 2px solid var(--primary-accent-color); }
@@ -620,7 +630,7 @@ h5 {
     border-top: none; 
     border-radius: 0 0 var(--border-radius) var(--border-radius);
     transition: background-color 0.2s ease-out;
-    z-index: 1; /* Default stacking within its parent */
+    z-index: 1; 
 }
 .character-panel.active { display: block; }
 
