@@ -170,8 +170,7 @@ h5 {
 .overview-panel { 
     position: sticky;
     top: 0; 
-    z-index: 1002; 
-    /* margin-bottom will be handled by showcase area or gap if needed */
+    z-index: 1002; /* Must be highest for sticky top */
     max-height: 95vh; 
     display: flex; 
     flex-direction: column;
@@ -332,12 +331,16 @@ h5 {
     display: none !important;
 }
 
+/* New wrapper for content that scrolls below the sticky overview panel */
+.scrollable-content-wrapper {
+    padding-top: var(--overview-panel-height); /* Dynamic padding based on overview panel's height */
+}
 
 .background-showcase-area {
-    height: var(--background-showcase-height);
-    position: relative; 
-    z-index: 998; /* Below overview, above tabs */
-    pointer-events: none; /* Let clicks pass through to background if needed, or content below */
+    height: var(--background-showcase-height); /* 350px */
+    position: relative; /* Establishes stacking context and for ::before */
+    z-index: 2; /* Higher than panels scrolling underneath it, within .scrollable-content-wrapper */
+    pointer-events: none; 
 }
 
 .background-showcase-area::before { 
@@ -348,39 +351,45 @@ h5 {
     width: 100%;
     height: 100%;
     background: linear-gradient(to bottom, 
-        rgba(var(--dark-bg-primary-rgb), 1) 0%, 
-        rgba(var(--dark-bg-primary-rgb), 0.9) 15%, /* Start fading sooner */
-        rgba(var(--dark-bg-primary-rgb), 0.3) 60%, /* Mostly transparent mid-way */
-        rgba(var(--dark-bg-primary-rgb), 0) 100% 
+        rgba(var(--dark-bg-primary-rgb), 1) 0%,      /* Opaque (matching page bg) at top of showcase */
+        rgba(var(--dark-bg-primary-rgb), 0.9) 15%,
+        rgba(var(--dark-bg-primary-rgb), 0.3) 60%,
+        rgba(var(--dark-bg-primary-rgb), 0) 100%     /* Transparent at bottom of showcase */
     );
     pointer-events: none; 
-    z-index: 1; 
+    z-index: 1; /* Internal to showcase area, ::before is behind showcase content if any */
 }
 
 
 .tabs-and-panels-container {
-    position: relative; 
-    z-index: 990; 
+    position: relative; /* Establishes stacking context */
+    z-index: 1; /* Lower than background-showcase-area, within .scrollable-content-wrapper */
 }
 
 .character-tabs {
+    /* position: sticky; */ /* REMOVED - Tabs now scroll with content */
+    /* top: calc(var(--overview-panel-height) + var(--background-showcase-height)); */ /* REMOVED */
+    /* z-index: 1000; */ /* REMOVED or significantly lowered */
+    
     display: flex;
     border-bottom: 2px solid var(--primary-accent-color);
-    position: sticky;
-    top: calc(var(--overview-panel-height) + var(--background-showcase-height)); /* Dynamic top position */
+    /* background-color needs to be opaque enough to hide content scrolling under it, if showcase area is transparent */
     background-color: rgba(var(--dark-bg-primary-rgb), var(--panel-bg-primary-alpha)); 
-    z-index: 1000; 
+    
+    /* Removed sticky, so z-index is relative to its parent .tabs-and-panels-container
+       or its siblings if it were moved out. Kept inside for logical grouping. */
+    /* No specific z-index needed unless it has dropdowns that need to pop over other tab content. */
+    
     padding: 0;
     width: 100%;
-    transition: top 0.1s ease-out, background-color 0.2s ease-out;
+    transition: top 0.1s ease-out, background-color 0.2s ease-out; /* 'top' transition likely no longer relevant */
     overflow-x: auto; 
     -webkit-overflow-scrolling: touch; 
     scrollbar-width: thin; 
     scrollbar-color: var(--primary-accent-color) var(--dark-bg-secondary); 
 }
 
-/* ... (Rest of CSS, make sure the styles from previous response for opacity variables are applied everywhere, e.g., inputs, character panels, etc. This is just a snippet for brevity) ... */
-/* Ensure all panel background colors use the --panel-bg-xxx-alpha variables */
+
 .overview-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px; align-items: start;
@@ -547,7 +556,6 @@ h5 {
     flex-grow: 1; 
     flex-basis: 0; 
     flex-shrink: 1; 
-    /* min-width: 70px; /* Allow full stretch, scroll on parent will handle overflow */
     border: 1px solid transparent;
     border-bottom: none;
     cursor: pointer;
@@ -603,15 +611,22 @@ h5 {
 .tab-button.active {
     background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
     color: var(--primary-accent-color);
-    border-top: 2px solid var(--primary-accent-color);
+    /* Border adjustments as tabs are no longer "breaking out" of a sticky bottom border */
+    border-top: 2px solid var(--primary-accent-color); /* Keep top highlight */
     border-left: 1px solid var(--primary-accent-color);
     border-right: 1px solid var(--primary-accent-color);
-    border-bottom: 1px solid rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); 
-    font-weight: 600; position: relative; z-index: 1; margin-bottom: -1px;
+    /* border-bottom: 1px solid rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha)); /* Match active tab bg */
+    /* The main .character-tabs has a border-bottom. Active tab should visually connect. */
+    margin-bottom: -2px; /* Pull up to overlap .character-tabs border-bottom */
+    padding-bottom: calc(12px + 2px); /* Compensate for margin-bottom pull */
+
+
+    font-weight: 600; position: relative; z-index: 1; /* z-index for active tab over inactive ones if overlapping occurs */
     box-shadow: 0 -3px 10px rgba(0, 240, 255, 0.2); 
 }
 .tab-button.active:first-child { border-left: 2px solid var(--primary-accent-color); }
 .tab-button.active:last-child { border-right: 2px solid var(--primary-accent-color); }
+
 .tab-button.active .tab-char-name-display {
     font-weight: 600;
     text-shadow: var(--text-shadow-accent);
@@ -623,7 +638,7 @@ h5 {
     padding: 25px; 
     background-color: rgba(var(--dark-bg-tertiary-rgb), var(--panel-bg-tertiary-alpha));
     border: 1px solid var(--primary-accent-color); 
-    border-top: none;
+    border-top: none; /* Important: to connect with tabs' bottom border */
     border-radius: 0 0 var(--border-radius) var(--border-radius);
     transition: background-color 0.2s ease-out;
 }
@@ -740,9 +755,9 @@ h5 {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 .bonus-item .remove-bonus:hover {
-    background-color: var(--danger-color); 
+    background-color: var(--danger-color, #e53935); /* Added fallback danger color */
     color: white;
-    border-color: var(--danger-color);
+    border-color: var(--danger-color, #e53935);
 }
 
 .bonus-item .trigger-label {
@@ -876,8 +891,6 @@ h5 {
   background: var(--primary-accent-color); cursor: pointer; margin-top: -6px; 
   box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
 }
-/* Add other browser prefixes for range as before */
-
 
 .settings-footer .background-settings button#resetBackgroundButton {
     padding: 10px 18px;
@@ -976,10 +989,12 @@ h5 {
     .overview-header { 
         min-height: 45px; 
     }
-    /* .character-tabs top value will be set by JS */
     .tab-button { 
         min-width: auto; 
         padding: 10px 5px; 
+    }
+     .tab-button.active {
+        padding-bottom: calc(10px + 2px); /* Adjust for smaller padding */
     }
     .tab-char-name-display { font-size: 0.85em; }
 
@@ -1034,5 +1049,4 @@ h5 {
     .overview-toggle-btn { padding: 4px 6px; font-size: 1em; }
     .simplified-char-info { flex-direction: column; align-items: flex-start; }
     .simplified-final-damage { margin-left: 0; }
-    /* .tab-button { min-width: 60px; } /* Allow flex for smallest */
 }
