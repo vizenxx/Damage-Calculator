@@ -1,6 +1,7 @@
 // js/main.js
 // (Keep everything else the same as the previous complete version)
 // Only showing the modified handleGlobalNonPanelInput and populateSimplifiedTriggers
+// AND setupStickyTabsObserver and updateStickyTabsPosition
 
 function populateSimplifiedTriggers() {
     const container = document.getElementById('simplifiedTriggersContainer');
@@ -50,12 +51,7 @@ function handleGlobalNonPanelInput(event) {
     const target = event.target;
     if (target.closest('.character-panel') || target.closest('.settings-footer')) return; 
 
-    // Fetch activeCharData based on the global activeCharacterIndex AT THE TIME OF THE EVENT
-    // This is crucial.
     const currentActiveCharData = characters[window.activeCharacterIndex];
-
-    // console.log('handleGlobalNonPanelInput for target:', target.id, 'Active Char Index:', window.activeCharacterIndex, 'Char Name:', currentActiveCharData ? currentActiveCharData.name : 'N/A');
-
 
     let needsRecalc = false;
 
@@ -69,12 +65,10 @@ function handleGlobalNonPanelInput(event) {
         const fieldName = target.dataset.fieldName;
         if (fieldName && fieldName.endsWith('_QUICKVIEW')) {
             if (!currentActiveCharData) {
-                // console.warn('No active character data found for quickview update.');
                 return; 
             }
 
             const baseFieldName = fieldName.replace('_QUICKVIEW', '');
-            // console.log('Processing QUICKVIEW field:', baseFieldName, 'for char index:', window.activeCharacterIndex);
             
             if (baseFieldName === 'critDamageUp_isTriggered') {
                 if(currentActiveCharData.critDamageUp) currentActiveCharData.critDamageUp.isTriggered = target.checked;
@@ -102,7 +96,6 @@ function handleGlobalNonPanelInput(event) {
             }
             needsRecalc = true;
             
-            // Sync between simplified and full overview (this part should remain the same)
             if (target.id.includes('_simplified')) {
                 updateFullOverviewFromSimplified(baseFieldName, target.type === 'checkbox' ? target.checked : target.value);
             } else {
@@ -116,12 +109,7 @@ function handleGlobalNonPanelInput(event) {
     }
 }
 
-// THE REST OF main.js (initApplication, setupPanelOpacityControls, setupStickyTabsObserver, etc.)
-// REMAINS THE SAME AS THE PREVIOUS COMPLETE VERSION.
-// For brevity, I'm not pasting the entire file again, just ensure you merge this modified
-// populateSimplifiedTriggers and handleGlobalNonPanelInput into the existing complete main.js.
-
-// Full main.js for completeness:
+// Full main.js for completeness (with modifications to setupStickyTabsObserver and updateStickyTabsPosition):
 document.addEventListener('DOMContentLoaded', () => {
     try {
         initApplication();
@@ -130,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         populateSimplifiedTriggers(); 
         setupBackgroundControls(); 
         setupPanelOpacityControls(); 
-        setupStickyTabsObserver(); 
+        setupStickyTabsObserver(); // This now mainly sets --overview-panel-height
 
         if (NUM_CHARACTERS > 0 && characters.length > 0 && typeof switchTab === 'function') {
            switchTab(0); 
@@ -143,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// populateSimplifiedTriggers (modified above)
 
 function setupGlobalUITogglesAndInteractions() {
     const showTraceCheckbox = document.getElementById('showFormulaTraceGlobal');
@@ -167,7 +154,7 @@ function setupGlobalUITogglesAndInteractions() {
             const isSimplified = overviewPanel.classList.toggle('simplified');
             toggleOverviewBtn.textContent = isSimplified ? '▼' : '▲';
             toggleOverviewBtn.setAttribute('aria-label', isSimplified ? '展开概览' : '收起概览');
-            updateStickyTabsPosition(); 
+            updateOverviewPanelHeightVar(); // Changed from updateStickyTabsPosition
         });
     }
 }
@@ -253,25 +240,24 @@ function setupPanelOpacityControls() {
     }
 }
 
-function updateStickyTabsPosition() {
+// Renamed and simplified: This function now only updates the CSS variable for overview panel height.
+function updateOverviewPanelHeightVar() {
     const overviewPanel = document.getElementById('overviewPanel'); 
-    const characterTabs = document.getElementById('characterTabs');
-    if (overviewPanel && characterTabs) {
+    if (overviewPanel) {
         const overviewHeight = overviewPanel.offsetHeight;
-        characterTabs.style.top = `${overviewHeight}px`;
         document.documentElement.style.setProperty('--overview-panel-height', `${overviewHeight}px`);
     }
 }
 
-function setupStickyTabsObserver() {
+function setupStickyTabsObserver() { // Name kept for consistency, but behavior changed
     const overviewPanel = document.getElementById('overviewPanel');
     if (!overviewPanel) return;
 
-    updateStickyTabsPosition(); 
+    updateOverviewPanelHeightVar(); // Initial call
 
     const observer = new ResizeObserver(entries => {
         for (let entry of entries) {
-            updateStickyTabsPosition();
+            updateOverviewPanelHeightVar(); // Update on resize
         }
     });
 
@@ -405,7 +391,6 @@ function handleCharacterPanelInput(event) {
     }
 }
 
-// handleGlobalNonPanelInput (modified above)
 
 function updateSimplifiedTriggerFromFull(baseFieldName, value, inputType) {
     const map = {
